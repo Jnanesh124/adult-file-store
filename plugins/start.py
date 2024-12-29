@@ -96,7 +96,7 @@ async def start_command(client: Client, message: Message):
                     ids = [int(int(argument[1]) / abs(client.db_channel.id))]
                 except:
                     return
-            temp_msg = await message.reply("Please wait...")
+            temp_msg = await message.reply("sending wait...")
             try:
                 messages = await get_messages(client, ids)
             except:
@@ -130,8 +130,8 @@ async def start_command(client: Client, message: Message):
 
         elif verify_status['is_verified']:
             reply_markup = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("About Me", callback_data="about"),
-                  InlineKeyboardButton("Close", callback_data="close")]]
+                [[InlineKeyboardButton("main adult channel", url=f'https://t.me/+SmF5dsu_aWQ5ZGFl'),
+                  ]]
             )
             await message.reply_text(
                 text=START_MSG.format(
@@ -150,15 +150,15 @@ async def start_command(client: Client, message: Message):
             verify_status = await get_verify_status(id)
             if IS_VERIFY and not verify_status['is_verified']:
                 short_url = f"adrinolinks.in"
-                # TUT_VID = f"https://t.me/ultroid_official/18"
+                # TUT_VID = f"https://t.me/How_to_open_link_rockersbot"
                 token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
                 await update_verify_status(id, verify_token=token, link="")
                 link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API,f'https://telegram.dog/{client.username}?start=verify_{token}')
                 btn = [
-                    [InlineKeyboardButton("Click here", url=link)],
-                    [InlineKeyboardButton('How to use the bot', url=TUT_VID)]
+                    [InlineKeyboardButton("Verify", url=link)],
+                    [InlineKeyboardButton('How To Verify', url=TUT_VID)]
                 ]
-                await message.reply(f"Your Ads token is expired, refresh your token and try again.\n\nToken Timeout: {get_exp_time(VERIFY_EXPIRE)}\n\nWhat is the token?\n\nThis is an ads token. If you pass 1 ad, you can use the bot for 24 Hour after passing the ad.", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
+                await message.reply(f"U need to verify 1 time\n\n after 24HOUR FREE DIRECT FILE", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
 
 
         
@@ -176,11 +176,13 @@ REPLY_ERROR = """<code>Use this command as a replay to any telegram message with
 async def not_joined(client: Client, message: Message):
     buttons = [
         [
+            InlineKeyboardButton("join channel", url=f'https://t.me/+ksnFVzMfL4cyY2I1'),
+        ],[
             InlineKeyboardButton(
                 "Join Channel",
-                url = client.invitelink)
-        ]
-    ]
+                url = client.invitelink),
+            InlineKeyboardButton("join channel", url=f'https://t.me/+MKBzevB1VYc2MGE1'),
+    ]]
     try:
         buttons.append(
             [
