@@ -145,9 +145,9 @@ async def start_command(client: Client, message: Message):
             # Follow-up message after sending the files
             follow_up_msg = await client.send_message(
                 chat_id=message.from_user.id,
-                text="Thank you for using our service! If you need more files, click /start again."
+                text="No link ❌ no ads ❌ Direct video ✅\n⛔️ kannada\n⛔️ nudi\n⛔️ oyo\n⛔️ Hidden cam\n⛔️ Rp\n⛔️ Brazzer \n⛔️ only fan\n⛔️ Celibrate\n⛔️ animal s€x\n⛔️ girls Lesbian \n⛔️ Desi\n⛔️ She Male\n⛔️ Savitha bhabhi \n\n👆🏻Abow all direct video 👆🏻\n\nJust :- 250₹ ( one time payment Lifetime free)\n\nTo Buy msg :- @msgmetobuy\n\n  ✅ All Are Video Uploaded In Different channel forwarding allows ✅"
             )
-            await asyncio.sleep(10)  # Adjust the delay as needed
+            await asyncio.sleep(500)  # Adjust the delay as needed
             await follow_up_msg.delete()
 
         elif verify_status['is_verified']:
@@ -179,7 +179,7 @@ async def start_command(client: Client, message: Message):
                     [InlineKeyboardButton("Verify", url=link)],
                     [InlineKeyboardButton('How To Verify', url=TUT_VID)]
                 ]
-                await message.reply(f"U need to verify 1 time\n\n after 24HOUR FREE DIRECT FILE", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
+                await message.reply(f"U need to verify 1 time\n\n<blockquote>after 24HOUR FREE DIRECT FILE</blockquote>", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
 
 
         
