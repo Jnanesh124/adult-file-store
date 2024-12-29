@@ -45,7 +45,6 @@ async def start_command(client: Client, message: Message):
     # Check if the user is the owner
     if id == owner_id:
         # Owner-specific actions
-        # You can add any additional actions specific to the owner here
         await message.reply("You are the owner! Additional actions can be added here.")
 
     else:
@@ -82,7 +81,7 @@ async def start_command(client: Client, message: Message):
                 except:
                     return
                 if start <= end:
-                    ids = range(start, end+1)
+                    ids = range(start, end + 1)
                 else:
                     ids = []
                     i = start
@@ -96,7 +95,7 @@ async def start_command(client: Client, message: Message):
                     ids = [int(int(argument[1]) / abs(client.db_channel.id))]
                 except:
                     return
-            temp_msg = await message.reply("sending wait...")
+            temp_msg = await message.reply("Sending, please wait...")
             try:
                 messages = await get_messages(client, ids)
             except:
@@ -108,7 +107,10 @@ async def start_command(client: Client, message: Message):
             
             for msg in messages:
                 if bool(CUSTOM_CAPTION) & bool(msg.document):
-                    caption = CUSTOM_CAPTION.format(previouscaption="" if not msg.caption else msg.caption.html, filename=msg.document.file_name)
+                    caption = CUSTOM_CAPTION.format(
+                        previouscaption="" if not msg.caption else msg.caption.html,
+                        filename=msg.document.file_name
+                    )
                 else:
                     caption = "" if not msg.caption else msg.caption.html
 
@@ -118,20 +120,39 @@ async def start_command(client: Client, message: Message):
                     reply_markup = None
 
                 try:
-                    snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                    snt_msg = await msg.copy(
+                        chat_id=message.from_user.id,
+                        caption=caption,
+                        parse_mode=ParseMode.HTML,
+                        reply_markup=reply_markup,
+                        protect_content=PROTECT_CONTENT
+                    )
                     await asyncio.sleep(0.5)
                     snt_msgs.append(snt_msg)
                 except FloodWait as e:
                     await asyncio.sleep(e.x)
-                    snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                    snt_msg = await msg.copy(
+                        chat_id=message.from_user.id,
+                        caption=caption,
+                        parse_mode=ParseMode.HTML,
+                        reply_markup=reply_markup,
+                        protect_content=PROTECT_CONTENT
+                    )
                     snt_msgs.append(snt_msg)
                 except:
                     pass
 
+            # Follow-up message after sending the files
+            follow_up_msg = await client.send_message(
+                chat_id=message.from_user.id,
+                text="Thank you for using our service! If you need more files, click /start again."
+            )
+            await asyncio.sleep(10)  # Adjust the delay as needed
+            await follow_up_msg.delete()
+
         elif verify_status['is_verified']:
             reply_markup = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("main adult channel", url=f'https://t.me/+SmF5dsu_aWQ5ZGFl'),
-                  ]]
+                [[InlineKeyboardButton("Main Adult Channel", url='https://t.me/+SmF5dsu_aWQ5ZGFl')]]
             )
             await message.reply_text(
                 text=START_MSG.format(
