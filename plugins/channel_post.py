@@ -2,8 +2,10 @@ import asyncio
 from pyrogram import filters, Client
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import FloodWait
-from moviepy.editor import VideoFileClip  # Import moviepy to generate video thumbnails
+from moviepy.editor import VideoFileClip
+from PIL import Image
 import os
+import io
 
 from bot import Bot
 from config import ADMINS, CHANNEL_ID, DISABLE_CHANNEL_BUTTON
@@ -19,7 +21,10 @@ async def channel_post(client: Client, message: Message):
             thumbnail_path = "thumbnail.jpg"
             clip = VideoFileClip(video_path)
             frame = clip.get_frame(0)  # Get the first frame
-            frame.save_frame(thumbnail_path)  # Save as a thumbnail image
+
+            # Convert the numpy array frame to an image using PIL
+            image = Image.fromarray(frame)
+            image.save(thumbnail_path)  # Save as a thumbnail image
 
             # Send the thumbnail image
             await message.reply_photo(photo=thumbnail_path, caption="Here is your video thumbnail!")
