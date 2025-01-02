@@ -4,18 +4,21 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import FloodWait
 from moviepy.editor import VideoFileClip
 from PIL import Image
+from PyPDF2 import PdfReader
 import os
 
 from bot import Bot
 from config import ADMINS, CHANNEL_ID, DISABLE_CHANNEL_BUTTON
 from helper_func import encode
 
+
 @Bot.on_message(filters.private & filters.user(ADMINS) & ~filters.command(['start', 'users', 'broadcast', 'batch', 'genlink', 'stats']))
 async def channel_post(client: Client, message: Message):
     reply_text = await message.reply_text("Please Wait...!", quote=True)
+    thumbnail_path = None
 
     try:
-        # Handle video or media files
+        # Handle video files
         if message.video:
             video_path = await message.download()  # Download the video file
             thumbnail_path = "thumbnail.jpg"
@@ -26,15 +29,35 @@ async def channel_post(client: Client, message: Message):
             image = Image.fromarray(frame)
             image.save(thumbnail_path)  # Save as a thumbnail image
 
-            # Send the video to the channel
-            post_message = await message.copy(chat_id=client.db_channel.id, disable_notification=True)
-
             # Remove the downloaded video after use
             os.remove(video_path)
-        else:
-            # If no video, just proceed with the usual link generation
-            post_message = await message.copy(chat_id=client.db_channel.id, disable_notification=True)
-            thumbnail_path = None
+
+        # Handle PDF files
+        elif message.document and message.document.mime_type == "application/pdf":
+            pdf_path = await message.download()  # Download the PDF file
+            thumbnail_path = "pdf_thumbnail.jpg"
+            pdf_reader = PdfReader(pdf_path)
+            first_page = pdf_reader.pages[0]
+            image = first_page.extract_images()[0]  # Extract the first image
+            image.save(thumbnail_path)  # Save as a thumbnail image
+
+            # Remove the downloaded PDF after use
+            os.remove(pdf_path)
+
+        # Handle other file types (default image extraction for non-video/document files)
+        elif message.document:
+            file_path = await message.download()  # Download the file
+            thumbnail_path = "file_thumbnail.jpg"
+            image = Image.open(file_path)  # Open the file as an image
+            image.thumbnail((200, 200))  # Resize to thumbnail size
+            image.save(thumbnail_path)  # Save as a thumbnail image
+
+            # Remove the downloaded file after use
+            os.remove(file_path)
+
+        # Copy the message to the channel
+        post_message = await message.copy(chat_id=client.db_channel.id, disable_notification=True)
+
     except FloodWait as e:
         await asyncio.sleep(e.value)
         post_message = await message.copy(chat_id=client.db_channel.id, disable_notification=True)
