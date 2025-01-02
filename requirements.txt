@@ -10,6 +10,7 @@ umongo
 dnspython
 marshmallow
 # --- For-Web-Response ------- #
+moviepy
 pytz
 requests
 bs4
@@ -19,4 +20,3 @@ aiofiles
 asyncio
 python-telegram-bot
 pillow
-moviepy
