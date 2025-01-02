@@ -15,6 +15,8 @@ import requests
 import time
 from datetime import datetime
 from database.database import user_data, db_verify_status, db_update_verify_status
+from PIL import Image
+from moviepy.editor import VideoFileClip
 
 #logger = logging.getLogger(__name__)
 #logger.setLevel(logging.INFO)
@@ -143,5 +145,16 @@ def get_readable_time(seconds: int) -> str:
     up_time += ":".join(time_list)
     return up_time
 
+# New functions for thumbnail generation
+def create_image_thumbnail(input_image_path, output_image_path, size=(128, 128)):
+    with Image.open(input_image_path) as img:
+        img.thumbnail(size)
+        img.save(output_image_path, "JPEG")
+
+def create_video_thumbnail(video_path, thumbnail_path, time=1.0):
+    with VideoFileClip(video_path) as video:
+        frame = video.get_frame(time)
+        frame_image = Image.fromarray(frame)
+        frame_image.save(thumbnail_path, "JPEG")
 
 subscribed = filters.create(is_subscribed)
