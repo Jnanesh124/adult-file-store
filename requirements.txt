@@ -21,3 +21,4 @@ asyncio
 python-telegram-bot
 pillow
 ffmpeg
+imageio[ffmpeg]
