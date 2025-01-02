@@ -17,3 +17,6 @@ shortzy
 aiohttp
 aiofiles
 asyncio
+python-telegram-bot
+pillow
+moviepy
