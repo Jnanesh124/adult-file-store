@@ -20,3 +20,4 @@ aiofiles
 asyncio
 python-telegram-bot
 pillow
+ffmpeg
