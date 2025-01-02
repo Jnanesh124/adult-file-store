@@ -1,4 +1,3 @@
-
 from aiohttp import web
 from plugins import web_server
 
@@ -10,6 +9,8 @@ from datetime import datetime
 
 from config import API_HASH, APP_ID, LOGGER, TG_BOT_TOKEN, TG_BOT_WORKERS, FORCE_SUB_CHANNEL, CHANNEL_ID, PORT
 import pyrogram.utils
+from helper_func import create_image_thumbnail, create_video_thumbnail  # Import thumbnail functions
+import os
 
 pyrogram.utils.MIN_CHAT_ID = -999999999999
 pyrogram.utils.MIN_CHANNEL_ID = -100999999999999
@@ -70,6 +71,25 @@ class Bot(Client):
         await app.setup()
         bind_address = "0.0.0.0"
         await web.TCPSite(app, bind_address, PORT).start()
+
+    async def handle_file_upload(self, file_path, chat_id):
+        """
+        Handles file uploads and generates/sends thumbnails.
+        """
+        thumbnail_path = "thumbnail.jpg"  # Temporary thumbnail path
+
+        if file_path.lower().endswith(('.png', '.jpg', '.jpeg')):
+            # Generate image thumbnail
+            create_image_thumbnail(file_path, thumbnail_path)
+        elif file_path.lower().endswith(('.mp4', '.mkv', '.avi')):
+            # Generate video thumbnail
+            create_video_thumbnail(file_path, thumbnail_path)
+
+        # Send the thumbnail to the user
+        if os.path.exists(thumbnail_path):
+            with open(thumbnail_path, 'rb') as thumb:
+                await self.send_photo(chat_id=chat_id, photo=thumb)
+            os.remove(thumbnail_path)
 
     async def stop(self, *args):
         await super().stop()
