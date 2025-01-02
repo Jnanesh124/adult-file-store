@@ -20,4 +20,4 @@ aiofiles
 asyncio
 python-telegram-bot
 pillow
-heroku-buildpack-ffmpeg
+ffmpeg
