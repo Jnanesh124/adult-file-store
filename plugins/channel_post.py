@@ -2,9 +2,7 @@ import asyncio
 from pyrogram import filters, Client
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import FloodWait
-from PIL import Image
 import os
-import io
 
 from bot import Bot
 from config import ADMINS, CHANNEL_ID, DISABLE_CHANNEL_BUTTON
@@ -14,18 +12,22 @@ from helper_func import encode
 async def channel_post(client: Client, message: Message):
     reply_text = await message.reply_text("Please Wait...!", quote=True)
     try:
-        # Check if the message contains a video or document with a thumbnail
         if message.video and message.video.thumbs:
-            thumbnail = message.video.thumbs[0].file_id  # Use Telegram's built-in thumbnail
-            await message.reply_photo(photo=thumbnail, caption="Here is your video thumbnail!")
+            # Extract and download the thumbnail without downloading the full video
+            thumbnail = message.video.thumbs[0].file_id
+            thumb_file = await client.download_media(thumbnail)
+            await message.reply_photo(photo=thumb_file, caption="Here is your video thumbnail!")
+            os.remove(thumb_file)  # Clean up the downloaded thumbnail
         elif message.document and message.document.thumbs:
-            thumbnail = message.document.thumbs[0].file_id  # Use Telegram's built-in thumbnail
-            await message.reply_photo(photo=thumbnail, caption="Here is your document thumbnail!")
+            # Extract and download the thumbnail without downloading the full document
+            thumbnail = message.document.thumbs[0].file_id
+            thumb_file = await client.download_media(thumbnail)
+            await message.reply_photo(photo=thumb_file, caption="Here is your document thumbnail!")
+            os.remove(thumb_file)  # Clean up the downloaded thumbnail
         else:
-            # If no thumbnail is available, proceed with link generation
+            # Proceed with link generation if no thumbnail exists
             post_message = await message.copy(chat_id=client.db_channel.id, disable_notification=True)
 
-        # Generate and send the unique link
         converted_id = post_message.id * abs(client.db_channel.id)
         string = f"get-{converted_id}"
         base64_string = await encode(string)
@@ -34,7 +36,6 @@ async def channel_post(client: Client, message: Message):
         reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]])
         await reply_text.edit(f"<b>Here is your link</b>\n\n{link}", reply_markup=reply_markup, disable_web_page_preview=True)
 
-        # Update the channel post with the link
         if not DISABLE_CHANNEL_BUTTON:
             try:
                 await post_message.edit_reply_markup(reply_markup)
@@ -51,13 +52,11 @@ async def channel_post(client: Client, message: Message):
         await reply_text.edit_text("Something went Wrong..!")
         return
 
-
 @Bot.on_message(filters.channel & filters.incoming & filters.chat(CHANNEL_ID))
 async def new_post(client: Client, message: Message):
     if DISABLE_CHANNEL_BUTTON:
         return
 
-    # Generate the link as before
     converted_id = message.id * abs(client.db_channel.id)
     string = f"get-{converted_id}"
     base64_string = await encode(string)
