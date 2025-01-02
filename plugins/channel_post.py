@@ -17,13 +17,11 @@ async def channel_post(client: Client, message: Message):
 
         # Check if the message contains a video with a thumbnail
         if message.video and message.video.thumbs:
-            # Extract and download the thumbnail without downloading the full video
             thumbnail = message.video.thumbs[0].file_id
             thumbnail_path = await client.download_media(thumbnail)
 
         # Check if the message contains a document with a thumbnail
         elif message.document and message.document.thumbs:
-            # Extract and download the thumbnail without downloading the full document
             thumbnail = message.document.thumbs[0].file_id
             thumbnail_path = await client.download_media(thumbnail)
 
@@ -40,12 +38,12 @@ async def channel_post(client: Client, message: Message):
             # Prepare the caption with the link
             caption = f"<b>Here is your link:</b>\n\n{link}"
 
-            # Send the link without a thumbnail
+            # Send the link without a thumbnail (if no media)
             await reply_text.edit_text(caption, reply_markup=InlineKeyboardMarkup(
                 [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]]
             ))
 
-            # Remove the "Please Wait..." message after processing
+            # Do not delete the actual message, just the "Please Wait..." message
             await reply_text.delete()
             return  # Exit here to prevent further processing
 
