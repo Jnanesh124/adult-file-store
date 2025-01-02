@@ -49,6 +49,9 @@ async def channel_post(client: Client, message: Message):
                 [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]]
             ))
 
+        # Remove the "Please Wait..." message after processing
+        await reply_text.delete()
+
         if not DISABLE_CHANNEL_BUTTON:
             try:
                 await post_message.edit_reply_markup(InlineKeyboardMarkup(
