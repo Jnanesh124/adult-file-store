@@ -11,6 +11,7 @@ from helper_func import encode
 @Bot.on_message(filters.private & filters.user(ADMINS) & ~filters.command(['start', 'users', 'broadcast', 'batch', 'genlink', 'stats']))
 async def channel_post(client: Client, message: Message):
     reply_text = await message.reply_text("Please Wait...!", quote=True)
+    post_message = None  # Initialize post_message to avoid the error
     try:
         if message.video and message.video.thumbs:
             # Extract and download the thumbnail without downloading the full video
@@ -18,16 +19,25 @@ async def channel_post(client: Client, message: Message):
             thumb_file = await client.download_media(thumbnail)
             await message.reply_photo(photo=thumb_file, caption="Here is your video thumbnail!")
             os.remove(thumb_file)  # Clean up the downloaded thumbnail
+
+            # Copy the message to the channel to generate a stored link
+            post_message = await message.copy(chat_id=client.db_channel.id, disable_notification=True)
+
         elif message.document and message.document.thumbs:
             # Extract and download the thumbnail without downloading the full document
             thumbnail = message.document.thumbs[0].file_id
             thumb_file = await client.download_media(thumbnail)
             await message.reply_photo(photo=thumb_file, caption="Here is your document thumbnail!")
             os.remove(thumb_file)  # Clean up the downloaded thumbnail
-        else:
-            # Proceed with link generation if no thumbnail exists
+
+            # Copy the message to the channel to generate a stored link
             post_message = await message.copy(chat_id=client.db_channel.id, disable_notification=True)
 
+        else:
+            # If no thumbnail exists, just copy the message to the channel
+            post_message = await message.copy(chat_id=client.db_channel.id, disable_notification=True)
+
+        # Generate the link
         converted_id = post_message.id * abs(client.db_channel.id)
         string = f"get-{converted_id}"
         base64_string = await encode(string)
