@@ -11,31 +11,22 @@ from helper_func import encode
 @Bot.on_message(filters.private & filters.user(ADMINS) & ~filters.command(['start', 'users', 'broadcast', 'batch', 'genlink', 'stats']))
 async def channel_post(client: Client, message: Message):
     reply_text = await message.reply_text("Please Wait...!", quote=True)
-    post_message = None  # Initialize post_message to avoid the error
     try:
+        thumbnail_path = None  # Initialize thumbnail_path for cleanup
+        post_message = None
+
         if message.video and message.video.thumbs:
             # Extract and download the thumbnail without downloading the full video
             thumbnail = message.video.thumbs[0].file_id
-            thumb_file = await client.download_media(thumbnail)
-            await message.reply_photo(photo=thumb_file, caption="Here is your video thumbnail!")
-            os.remove(thumb_file)  # Clean up the downloaded thumbnail
-
-            # Copy the message to the channel to generate a stored link
-            post_message = await message.copy(chat_id=client.db_channel.id, disable_notification=True)
+            thumbnail_path = await client.download_media(thumbnail)
 
         elif message.document and message.document.thumbs:
             # Extract and download the thumbnail without downloading the full document
             thumbnail = message.document.thumbs[0].file_id
-            thumb_file = await client.download_media(thumbnail)
-            await message.reply_photo(photo=thumb_file, caption="Here is your document thumbnail!")
-            os.remove(thumb_file)  # Clean up the downloaded thumbnail
+            thumbnail_path = await client.download_media(thumbnail)
 
-            # Copy the message to the channel to generate a stored link
-            post_message = await message.copy(chat_id=client.db_channel.id, disable_notification=True)
-
-        else:
-            # If no thumbnail exists, just copy the message to the channel
-            post_message = await message.copy(chat_id=client.db_channel.id, disable_notification=True)
+        # Copy the message to the channel to generate a stored link
+        post_message = await message.copy(chat_id=client.db_channel.id, disable_notification=True)
 
         # Generate the link
         converted_id = post_message.id * abs(client.db_channel.id)
@@ -43,15 +34,28 @@ async def channel_post(client: Client, message: Message):
         base64_string = await encode(string)
         link = f"https://t.me/{client.username}?start={base64_string}"
 
-        reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]])
-        await reply_text.edit(f"<b>Here is your link</b>\n\n{link}", reply_markup=reply_markup, disable_web_page_preview=True)
+        # Prepare the caption with the link
+        caption = f"<b>Here is your link:</b>\n\n{link}"
+
+        # Send the thumbnail with the link in the caption
+        if thumbnail_path:
+            await message.reply_photo(photo=thumbnail_path, caption=caption, reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]]
+            ))
+            os.remove(thumbnail_path)  # Clean up the downloaded thumbnail
+        else:
+            # If no thumbnail, just send the link
+            await reply_text.edit_text(caption, reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]]
+            ))
 
         if not DISABLE_CHANNEL_BUTTON:
             try:
-                await post_message.edit_reply_markup(reply_markup)
+                await post_message.edit_reply_markup(InlineKeyboardMarkup(
+                    [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]]
+                ))
             except FloodWait as e:
                 await asyncio.sleep(e.value)
-                await post_message.edit_reply_markup(reply_markup)
             except Exception:
                 pass
 
@@ -78,6 +82,5 @@ async def new_post(client: Client, message: Message):
         await message.edit_reply_markup(reply_markup)
     except FloodWait as e:
         await asyncio.sleep(e.value)
-        await message.edit_reply_markup(reply_markup)
     except Exception:
         pass
