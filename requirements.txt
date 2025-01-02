@@ -10,7 +10,7 @@ umongo
 dnspython
 marshmallow
 # --- For-Web-Response ------- #
-moviepy
+moviepy==1.0.3
 pytz
 requests
 bs4
