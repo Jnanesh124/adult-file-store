@@ -25,6 +25,11 @@ async def channel_post(client: Client, message: Message):
             thumbnail = message.document.thumbs[0].file_id
             thumbnail_path = await client.download_media(thumbnail)
 
+        # Check if the message contains a GIF with a thumbnail
+        elif message.animation and message.animation.thumbs:
+            thumbnail = message.animation.thumbs[0].file_id
+            thumbnail_path = await client.download_media(thumbnail)
+
         # If there's no thumbnail, proceed with the usual link generation
         if not thumbnail_path:
             post_message = await message.copy(chat_id=client.db_channel.id, disable_notification=True)
@@ -42,6 +47,9 @@ async def channel_post(client: Client, message: Message):
             await message.reply_text(caption, reply_markup=InlineKeyboardMarkup(
                 [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]]
             ))
+
+            # Delete the original text message after sending the link
+            await message.delete()
 
             # Remove the "Please Wait..." message after processing
             await reply_text.delete()
@@ -65,6 +73,9 @@ async def channel_post(client: Client, message: Message):
                 [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]]
             ))
             os.remove(thumbnail_path)  # Clean up the downloaded thumbnail
+
+            # Delete the original message after sending the thumbnail and link
+            await message.delete()
 
         # Remove the "Please Wait..." message after processing
         await reply_text.delete()
