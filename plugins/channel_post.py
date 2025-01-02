@@ -39,11 +39,11 @@ async def channel_post(client: Client, message: Message):
             caption = f"<b>Here is your link:</b>\n\n{link}"
 
             # Send the link without a thumbnail (if no media)
-            await reply_text.edit_text(caption, reply_markup=InlineKeyboardMarkup(
+            await message.reply_text(caption, reply_markup=InlineKeyboardMarkup(
                 [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]]
             ))
 
-            # Do not delete the actual message, just the "Please Wait..." message
+            # Remove the "Please Wait..." message after processing
             await reply_text.delete()
             return  # Exit here to prevent further processing
 
