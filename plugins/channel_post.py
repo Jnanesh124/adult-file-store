@@ -1,18 +1,32 @@
 import asyncio
 import os
+import requests
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import FloodWait
-import requests
 from moviepy.editor import VideoFileClip
 from bot import Bot
 from config import ADMINS, CHANNEL_ID, DISABLE_CHANNEL_BUTTON
 from helper_func import encode
 
-# Function to generate a 30-second sample video from the stream URL
-def generate_sample_video_from_stream(stream_url, output_video_path, start_time=0, duration=30):
-    # Using ffmpeg to fetch a 30-second sample directly from the stream URL
-    os.system(f"ffmpeg -ss {start_time} -i {stream_url} -t {duration} -c:v libx264 -c:a aac -strict experimental {output_video_path}")
+# Stream Bot API URL and token
+stream_bot_url = "https://api.telegram.org/bot<7774713343:AAHJYTcuEa-20YCJDoMpiwkL2EViZdifRp4>/sendMessage"
+stream_file_url = "https://streembot-009a426ab9b2.herokuapp.com/watch/3353/"
+
+# Function to generate a 30-second sample video from a stream URL
+def generate_sample_video(input_video_path, output_video_path, start_time=0, duration=30):
+    video = VideoFileClip(input_video_path)
+    duration = min(duration, video.duration - start_time)
+    sample_video = video.subclip(start_time, start_time + duration)
+    sample_video.write_videofile(output_video_path, codec="libx264", fps=24)
+
+# Function to get stream URL from Stream Bot
+def get_stream_url(file_id):
+    response = requests.get(f"{stream_file_url}{file_id}")
+    if response.status_code == 200:
+        return response.json().get("result", {}).get("stream_url")
+    else:
+        return None
 
 # Handler to process private messages from admins
 @Bot.on_message(filters.private & filters.user(ADMINS) & ~filters.command(['start', 'users', 'broadcast', 'batch', 'genlink', 'stats']))
@@ -24,21 +38,23 @@ async def channel_post(client: Client, message: Message):
 
         # Check if the message contains a video
         if message.video:
-            # Send the file to the stream bot and get the stream URL
-            stream_url = "https://streembot-009a426ab9b2.herokuapp.com/watch/3353/%40ViewCinemas-+Year+10+%282024%29+HQ+HDRip+-+x264+-+%5BTam+_+Te.mkv?hash=AgAD9x"  # Example stream URL
+            # Get the stream URL from the Stream Bot
+            stream_url = get_stream_url(message.video.file_id)
+            if stream_url:
+                # Generate a 30-second sample from the stream URL (replace with actual streaming logic)
+                video_path = await message.download(file_name="partial_video.mp4", progress=None)
+                generate_sample_video(video_path, sample_video_path, start_time=0, duration=30)
 
-            # Generate a 30-second sample from the stream URL
-            generate_sample_video_from_stream(stream_url, sample_video_path, start_time=0, duration=30)
+                # Send the 30-second sample video
+                await message.reply_video(video=sample_video_path, caption="Here is your 30-second sample video.", reply_markup=InlineKeyboardMarkup(
+                    [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={sample_video_path}')]]
+                ))
 
-            # Send the 30-second sample video
-            await message.reply_video(video=sample_video_path, caption="Here is your 30-second sample video.", reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={sample_video_path}')]]
-            ))
-
-            # Clean up the generated sample video
-            os.remove(sample_video_path)
-
-        # If the message does not contain a video, proceed with usual link generation
+                # Clean up the downloaded video and generated sample video
+                os.remove(video_path)
+                os.remove(sample_video_path)
+            else:
+                await message.reply_text("Failed to get stream URL.")
         else:
             post_message = await message.copy(chat_id=client.db_channel.id, disable_notification=True)
 
