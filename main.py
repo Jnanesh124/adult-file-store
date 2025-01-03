@@ -10,5 +10,10 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGTERM, signal_handler)
 
 if __name__ == "__main__":
-    # Start the bot
-    Bot.run()
+    try:
+        # Start the bot
+        print("Starting bot...")
+        Bot.run()  # This should keep the bot running indefinitely
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        sys.exit(1)
