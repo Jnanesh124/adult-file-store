@@ -1,6 +1,6 @@
 from aiohttp import web
 from plugins import web_server
-from bot import Bot
+from bot_init import Bot
 
 import pyromod.listen
 from pyrogram import Client
