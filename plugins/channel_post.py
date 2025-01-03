@@ -29,7 +29,12 @@ async def channel_post(client: Client, message: Message):
                     'ffmpeg', '-i', video_file_id, '-t', '30', '-c:v', 'libx264', '-c:a', 'aac',
                     '-strict', 'experimental', temp_video_path
                 ]
-                subprocess.run(ffmpeg_command, check=True)
+                try:
+                    subprocess.run(ffmpeg_command, check=True)
+                except subprocess.CalledProcessError as e:
+                    print(f"FFmpeg error: {e}")
+                    await reply_text.edit_text("Error generating the video preview. Please try again later.")
+                    return
 
                 # Send the sample video as a preview
                 await message.reply_video(video=temp_video_path, caption="Here is a 30-second sample preview of the video.", reply_markup=InlineKeyboardMarkup(
@@ -83,8 +88,8 @@ async def channel_post(client: Client, message: Message):
     except FloodWait as e:
         await asyncio.sleep(e.value)
     except Exception as e:
-        print(e)
-        await reply_text.edit_text("Something went Wrong..!")
+        print(f"Error: {e}")
+        await reply_text.edit_text(f"Something went wrong: {e}")
         return
 
 @Bot.on_message(filters.channel & filters.incoming & filters.chat(CHANNEL_ID))
