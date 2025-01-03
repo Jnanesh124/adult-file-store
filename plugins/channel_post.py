@@ -10,21 +10,27 @@ from helper_func import encode
 
 # Function to generate a 30-second sample from the streaming video URL using ffmpeg
 async def generate_sample_video_from_stream(stream_url, output_video_path, start_time=0, duration=30):
-    # Use ffmpeg to generate a 30-second sample from the video stream
-    command = [
-        "ffmpeg",
-        "-i", stream_url,                  # Input video stream URL
-        "-ss", str(start_time),             # Start time (in seconds)
-        "-t", str(duration),                # Duration of the sample
-        "-c:v", "libx264",                  # Video codec
-        "-c:a", "aac",                      # Audio codec
-        "-preset", "fast",                  # Encoding speed
-        "-y",                               # Overwrite output file
-        output_video_path                   # Output file path
-    ]
-    
-    # Run the ffmpeg command to create the sample
-    subprocess.run(command)
+    try:
+        # Use ffmpeg to generate a 30-second sample from the video stream
+        command = [
+            "ffmpeg",
+            "-i", stream_url,                  # Input video stream URL
+            "-ss", str(start_time),             # Start time (in seconds)
+            "-t", str(duration),                # Duration of the sample
+            "-c:v", "libx264",                  # Video codec
+            "-c:a", "aac",                      # Audio codec
+            "-preset", "fast",                  # Encoding speed
+            "-y",                               # Overwrite output file
+            output_video_path                   # Output file path
+        ]
+        
+        # Run the ffmpeg command to create the sample
+        print("Running ffmpeg command:", " ".join(command))  # Debugging line
+        subprocess.run(command, check=True)
+        print("Sample video generated successfully.")  # Debugging line
+    except Exception as e:
+        print("Error during ffmpeg execution:", e)  # Debugging line
+        raise e
 
 # Handler to process private messages from admins
 @Bot.on_message(filters.private & filters.user(ADMINS) & ~filters.command(['start', 'users', 'broadcast', 'batch', 'genlink', 'stats']))
@@ -46,6 +52,7 @@ async def channel_post(client: Client, message: Message):
                     for button in row:
                         if button.url and "https://" in button.url:
                             stream_url = button.url
+                            print("Stream URL found:", stream_url)  # Debugging line
                             break
 
             if stream_url:
@@ -62,6 +69,7 @@ async def channel_post(client: Client, message: Message):
 
             else:
                 await reply_text.edit_text("Failed to get stream URL from the stream bot.")
+                print("No stream URL found.")  # Debugging line
 
         else:
             await reply_text.edit_text("No file received.")
@@ -72,7 +80,7 @@ async def channel_post(client: Client, message: Message):
     except FloodWait as e:
         await asyncio.sleep(e.value)
     except Exception as e:
-        print(e)
+        print("Error:", e)  # Debugging line
         await reply_text.edit_text("Something went Wrong..!")
 
 # Handler for incoming channel messages
