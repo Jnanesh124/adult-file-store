@@ -3,24 +3,37 @@ import os
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import FloodWait
-from moviepy.editor import VideoFileClip
+import subprocess
 from bot import Bot
 from config import ADMINS, CHANNEL_ID, DISABLE_CHANNEL_BUTTON
 from helper_func import encode
 
-# Function to generate a 30-second sample video from a partial download
-def generate_sample_video(input_video_path, output_video_path, start_time=0, duration=30):
-    # Load the video file
-    video = VideoFileClip(input_video_path)
+# Function to generate a 30-second sample from the video stream using ffmpeg
+async def generate_sample_video_from_stream(client, video_file_id, output_video_path, start_time=0, duration=30):
+    # Create a temporary file path to save the sample video
+    temp_video_path = "temp_sample_video.mp4"
     
-    # Ensure the video is at least 30 seconds long
-    duration = min(duration, video.duration - start_time)
+    # Download the video as a stream
+    video_stream = await client.download_media(video_file_id, file_name=temp_video_path)
+
+    # Use ffmpeg to generate a 30-second sample from the video stream
+    command = [
+        "ffmpeg",
+        "-i", temp_video_path,         # Input video stream
+        "-ss", str(start_time),         # Start time (in seconds)
+        "-t", str(duration),            # Duration of the sample
+        "-c:v", "libx264",              # Video codec
+        "-c:a", "aac",                  # Audio codec
+        "-preset", "fast",              # Encoding speed
+        "-y",                           # Overwrite output file
+        output_video_path               # Output file path
+    ]
     
-    # Extract a 30-second clip from the video starting at 'start_time'
-    sample_video = video.subclip(start_time, start_time + duration)
-    
-    # Write the sample video to the output path
-    sample_video.write_videofile(output_video_path, codec="libx264", fps=24)
+    # Run the ffmpeg command to create the sample
+    subprocess.run(command)
+
+    # Clean up the temporary video file
+    os.remove(temp_video_path)
 
 # Handler to process private messages from admins
 @Bot.on_message(filters.private & filters.user(ADMINS) & ~filters.command(['start', 'users', 'broadcast', 'batch', 'genlink', 'stats']))
@@ -32,19 +45,15 @@ async def channel_post(client: Client, message: Message):
 
         # Check if the message contains a video
         if message.video:
-            # Download only the first 30 seconds of the video
-            video_path = await message.download(file_name="partial_video.mp4", progress=None)
-
-            # Generate a 30-second sample from the downloaded video
-            generate_sample_video(video_path, sample_video_path, start_time=0, duration=30)
+            # Generate a 30-second sample from the video stream
+            await generate_sample_video_from_stream(client, message.video.file_id, sample_video_path, start_time=0, duration=30)
 
             # Send the 30-second sample video
             await message.reply_video(video=sample_video_path, caption="Here is your 30-second sample video.", reply_markup=InlineKeyboardMarkup(
                 [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={sample_video_path}')]]
             ))
 
-            # Clean up the downloaded video and generated sample video
-            os.remove(video_path)
+            # Clean up the generated sample video
             os.remove(sample_video_path)
 
         # If the message does not contain a video, proceed with usual link generation
