@@ -1,53 +1,91 @@
+
 import os
 import logging
+from logging.handlers import RotatingFileHandler
 
-# Mandatory Bot Configuration
-API_HASH = os.getenv("API_HASH", "your_api_hash")  # Replace with your API_HASH
-APP_ID = int(os.getenv("APP_ID", "123456"))        # Replace with your APP_ID
-TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN", "your_bot_token")  # Replace with your Bot Token
-TG_BOT_WORKERS = int(os.getenv("TG_BOT_WORKERS", "4"))  # Default: 4
-LOGGER = logging.getLogger(__name__)              # For logging bot events
+#Bot token @Botfather
+TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "7820594648:AAElYLOYY3Nx3O7U0W3iqaNqrY-pQJXItXI")
 
-# Database Configuration
-DB_URI = os.getenv("DB_URI", "your_mongodb_uri")  # MongoDB URI
-DB_NAME = os.getenv("DB_NAME", "your_database_name")  # Database name
+#Your API ID & API HASH from my.telegram.org [https://youtu.be/gZQJ-yTMkEo?si=H4NlUUgjsIc5btzH]
+#Your API ID from my.telegram.org
+APP_ID = int(os.environ.get("APP_ID", "21942125"))
 
-# Optional Channel and Subscription Configuration
-FORCE_SUB_CHANNEL = os.getenv("FORCE_SUB_CHANNEL", None)  # Channel ID or Username (e.g., "@channel")
-CHANNEL_ID = int(os.getenv("CHANNEL_ID", "-1001234567890"))  # ID of the bot's database channel
-PORT = int(os.getenv("PORT", "8080"))                      # Default port for webhook or server
+#Your API Hash from my.telegram.org
+API_HASH = os.environ.get("API_HASH", "6d412af77ce89f5bb1ed8971589d61b5")
 
-# Features Configuration
-ADMINS = [int(admin) for admin in os.getenv("ADMINS", "").split()]  # List of Admin User IDs
-START_MSG = os.getenv(
-    "START_MSG",
-    "Hello {first},\n\nWelcome to the bot! You can start by exploring available features.",
-)  # Customizable start message
-CUSTOM_CAPTION = os.getenv(
-    "CUSTOM_CAPTION",
-    "{previouscaption}\n\nFile Name: {filename}",
-)  # Customizable caption for forwarded messages
-DISABLE_CHANNEL_BUTTON = bool(os.getenv("DISABLE_CHANNEL_BUTTON", "False") == "True")  # Disable channel buttons
-PROTECT_CONTENT = bool(os.getenv("PROTECT_CONTENT", "False") == "True")  # Enable content protection
+#Your db channel Id
+CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1002205211966"))
 
-# Logging Configuration
+#OWNER ID
+OWNER_ID = int(os.environ.get("OWNER_ID", "6643562770"))
+
+#Port
+PORT = os.environ.get("PORT", "8585")
+
+#Database 
+#Database [https://youtu.be/qFB0cFqiyOM?si=fVicsCcRSmpuja1A]
+DB_URI = os.environ.get("DATABASE_URL", "mongodb+srv://jnanesh:jnanesh@cluster0.8pzxa6s.mongodb.net/?retryWrites=true&w=majority")
+DB_NAME = os.environ.get("DATABASE_NAME", "Cluster0")
+
+#Shortner (token system) 
+# check my discription to help by using my refer link of shareus.io
+# 
+
+SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "seturl.in")
+SHORTLINK_API = os.environ.get("SHORTLINK_API", "3daf41670bf9ee8030e786aed791f15ffb7eb104")
+VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', 86400)) # Add time in seconds
+IS_VERIFY = os.environ.get("IS_VERIFY", "True")
+TUT_VID = os.environ.get("TUT_VID", "https://youtu.be/tTBBA2wl28k?si=KAZYBHomSloGNhrd") # shareus ka tut_vid he 
+
+#force sub channel id, if you want enable force sub
+FORCE_SUB_CHANNEL = int(os.environ.get("FORCE_SUB_CHANNEL", "-1002025155845"))
+
+TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "4"))
+
+#start message
+START_MSG = os.environ.get("START_MESSAGE", "<blockquote>I can store private files in Specified Channel and other users can access it from special link.\n\n©️@JN2FLI</blockquote>")
+try:
+    ADMINS=[]
+    for x in (os.environ.get("ADMINS", "6643562770 6643562770 6643562770").split()):
+        ADMINS.append(int(x))
+except ValueError:
+        raise Exception("Your Admins list does not contain valid integers.")
+
+#Force sub message 
+FORCE_MSG = os.environ.get("FORCE_SUB_MESSAGE", "<strong>You need to join in my 5 Channel and subscribe my youtube channel\n\nhttps://youtube.com/@jn2flix?si=VsjRku4VVTjNi5xL\nAfter Join U Will Get Direct File 📂</strong>")
+
+#set your Custom Caption here, Keep None for Disable Custom Caption
+CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", None)
+
+#set True if you want to prevent users from forwarding files from bot
+PROTECT_CONTENT = True if os.environ.get('PROTECT_CONTENT', "False") == "True" else False
+
+#Set true if you want Disable your Channel Posts Share button
+DISABLE_CHANNEL_BUTTON = os.environ.get("DISABLE_CHANNEL_BUTTON", None) == 'True'
+
+BOT_STATS_TEXT = "<b>BOT UPTIME</b>\n{uptime}"
+USER_REPLY_TEXT = "for adult video use this bots\nhttps://t.me/desibhabhisexxxbot\nhttps://t.me/Brazzer_denial_bot\nhttps://t.me/kannada_Sexleaked_bot\nhttps://t.me/oyoroomsexpornxxxbot\n\nhttps://t.me/kannada_nudi_video_bot\n\n\nDirect sex video\nhttps://t.me/Adult_Videos_Membership_Bot"
+
+ADMINS.append(OWNER_ID)
+ADMINS.append(6643562770)
+
+LOG_FILE_NAME = "filesharingbot.txt"
+
 logging.basicConfig(
-    level=logging.INFO,  # Log level: DEBUG, INFO, WARNING, ERROR
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+    format="[%(asctime)s - %(levelname)s] - %(name)s - %(message)s",
+    datefmt='%d-%b-%y %H:%M:%S',
+    handlers=[
+        RotatingFileHandler(
+            LOG_FILE_NAME,
+            maxBytes=50000000,
+            backupCount=10
+        ),
+        logging.StreamHandler()
+    ]
 )
+logging.getLogger("pyrogram").setLevel(logging.WARNING)
 
-# Environment Variables Check
-def check_env_variables():
-    """
-    Verifies that all mandatory environment variables are set. 
-    Logs warnings for any missing variables.
-    """
-    mandatory_vars = ["API_HASH", "APP_ID", "TG_BOT_TOKEN", "DB_URI", "DB_NAME", "CHANNEL_ID"]
-    missing_vars = [var for var in mandatory_vars if not os.getenv(var)]
-    
-    if missing_vars:
-        LOGGER.warning(f"Missing required environment variables: {', '.join(missing_vars)}")
-        raise EnvironmentError("Please set all mandatory environment variables.")
 
-# Run the environment variable check
-check_env_variables()
+def LOGGER(name: str) -> logging.Logger:
+    return logging.getLogger(name)
