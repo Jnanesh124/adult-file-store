@@ -2,16 +2,22 @@ from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from helper_func import encode, decode, get_message_id
 
-# API credentials
-API_ID = 21942125  # Your API ID
-API_HASH = "6d412af77ce89f5bb1ed8971589d61b5"  # Your API Hash
-BOT_TOKEN = "7850868885:AAFc5n1OJ3egi7M3mLeJZI0ACyPDprbY_H8"  # Replace with your bot token
+# Primary Bot API credentials
+API_ID = 22505271  # Main bot's API ID
+API_HASH = "c89a94fcfda4bc06524d0903977fc81e"  # Main bot's API Hash
+BOT_TOKEN = "7850868885:AAFc5n1OJ3egi7M3mLeJZI0ACyPDprbY_H8"  # Main bot's token
 
-# Initialize bot client
-Bot = Client("MainBot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+# Secondary Bot API credentials
+SECONDARY_API_ID = 22505271  # Replace with second bot's API ID
+SECONDARY_API_HASH = "c89a94fcfda4bc06524d0903977fc81e"  # Replace with second bot's API Hash
+SECONDARY_BOT_TOKEN = "7850868885:AAFc5n1OJ3egi7M3mLeJZI0ACyPDprbY_H8"  # Replace with second bot's token
 
-# Command: /batch
-@Bot.on_message(filters.private & filters.command('batch'))
+# Initialize both bot clients
+MainBot = Client("MainBot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+SecondBot = Client("SecondBot", api_id=SECONDARY_API_ID, api_hash=SECONDARY_API_HASH, bot_token=SECONDARY_BOT_TOKEN)
+
+
+@MainBot.on_message(filters.private & filters.command('batch'))
 async def batch(client: Client, message: Message):
     while True:
         try:
@@ -68,16 +74,14 @@ async def batch(client: Client, message: Message):
         reply_markup=reply_markup
     )
 
-# Command: /start
-@Bot.on_message(filters.private & filters.command('start'))
+
+@MainBot.on_message(filters.private & filters.command('start'))
 async def start(client: Client, message: Message):
     if len(message.command) > 1:
-        # Extract the start parameter
         parameter = message.command[1]
         decoded = await decode(parameter)
 
         if decoded.startswith("get-"):
-            # Redirect to the first HTML page with the parameter
             html_link = f"https://jn2flix.blogspot.com/2025/01/j1.html?JN2FLIX={parameter}"
             await message.reply_text(
                 "Click the button below to proceed to the link:",
@@ -95,9 +99,12 @@ async def start(client: Client, message: Message):
             )
         )
 
-# Run the bot
+
+# Run both bots
 if __name__ == "__main__":
-    try:
-        Bot.run()
-    except KeyboardInterrupt:
-        print("Bot stopped.")
+    MainBot.start()
+    SecondBot.start()
+    print("Both bots are running...")
+    MainBot.idle()  # Keeps the bots running
+    SecondBot.stop()
+    MainBot.stop()
