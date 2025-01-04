@@ -45,7 +45,7 @@ TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "4"))
 
 #start message
 START_PIC = os.environ.get("START_PIC","https://admin.gskloots.tech/uploads/6779462204dc8.jpg")
-START_MSG = os.environ.get("START_MESSAGE", "<blockquote>I can store private files in Specified Channel and other users can access it from special link.\n\n©️@JN2FLI</blockquote>")
+START_MSG = os.environ.get("START_MESSAGE", "<blockquote>I can store private files in Specified Channel and other users can access it from special link.\n\n©️@JN2FLIX</blockquote>")
 try:
     ADMINS=[]
     for x in (os.environ.get("ADMINS", "6643562770 6643562770 6643562770").split()):
@@ -64,8 +64,8 @@ PROTECT_CONTENT = True if os.environ.get('PROTECT_CONTENT', "False") == "True" e
 
 # Auto delete time in seconds.
 AUTO_DELETE_TIME = int(os.getenv("AUTO_DELETE_TIME", "0"))
-AUTO_DELETE_MSG = os.environ.get("AUTO_DELETE_MSG", "This file will be automatically deleted in {time} seconds. Please ensure you have saved any necessary content before this time.")
-AUTO_DEL_SUCCESS_MSG = os.environ.get("AUTO_DEL_SUCCESS_MSG", "Your file has been successfully deleted. Thank you for using our service. ✅")
+AUTO_DELETE_MSG = os.environ.get("AUTO_DELETE_MSG", "u want direct sex video all type oyo,kannada,rp,nudi,desi,english,lesibian,shemale,more type than msg here to buy https://t.me/Adult_Videos_Membership_Bot")
+AUTO_DEL_SUCCESS_MSG = os.environ.get("AUTO_DEL_SUCCESS_MSG", "Your file has been successfully deleted. Thank you for using our service. ✅\n\nJOIN BACKUP CHANNEL @JN2FLIX\nJOIN BOTS CHANNEL @ROCKERSBACKUP")
 
 #Set true if you want Disable your Channel Posts Share button
 DISABLE_CHANNEL_BUTTON = os.environ.get("DISABLE_CHANNEL_BUTTON", None) == 'True'
