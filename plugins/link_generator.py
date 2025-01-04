@@ -28,7 +28,6 @@ SecondBot.db_channel = type("db_channel", (object,), {"id": DB_CHANNEL_ID})
 async def batch(client: Client, message: Message):
     while True:
         try:
-            # Ask for the first message
             first_message = await client.ask(
                 text="Forward the **First Message** from DB Channel or send its link:",
                 chat_id=message.from_user.id,
@@ -47,7 +46,6 @@ async def batch(client: Client, message: Message):
 
     while True:
         try:
-            # Ask for the last message
             second_message = await client.ask(
                 text="Now, forward the **Last Message** from DB Channel or send its link:",
                 chat_id=message.from_user.id,
