@@ -5,6 +5,8 @@ from bot import Bot
 from config import ADMINS
 from helper_func import get_message_id
 
+# In-memory store for user states (use a database for production)
+user_states = {}
 
 # Helper functions for encoding and decoding
 async def encode(data: str) -> str:
@@ -85,6 +87,12 @@ async def start(client: Client, message: Message):
         parameter = message.command[1]
         decoded = await decode(parameter)  # Use the decode function
         if decoded.startswith("get-"):
+            # Store the user's state for tracking
+            user_states[message.from_user.id] = {
+                "parameter": parameter,
+                "completed": False
+            }
+
             # Redirect the user to the first HTML page
             html_link = f"https://jn2flix.blogspot.com/2025/01/j1.html?JN2FLIX={parameter}"
             await message.reply_text(
@@ -96,9 +104,33 @@ async def start(client: Client, message: Message):
         else:
             await message.reply_text("❌ Invalid start parameter!")
     else:
-        await message.reply_text(
-            "Welcome! Use the bot to generate and share links.",
-            reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("🔗 About", url="https://t.me/JN2FLIX")]]
+        if user_states.get(message.from_user.id, {}).get("completed"):
+            # If the user has completed the process, send the file
+            await message.reply_document(
+                document="/mnt/data/my_files/requested_file.mp4",  # File path updated
+                caption="Here is your requested file!"
             )
+        else:
+            await message.reply_text(
+                "Welcome! Use the bot to generate and share links.",
+                reply_markup=InlineKeyboardMarkup(
+                    [[InlineKeyboardButton("🔗 About", url="https://t.me/JN2FLIX")]]
+                )
+            )
+
+
+@Bot.on_message(filters.private & filters.text)
+async def handle_return(client: Client, message: Message):
+    """Handle the return message after the redirection process."""
+    user_state = user_states.get(message.from_user.id)
+    if user_state and not user_state["completed"]:
+        # Mark the process as completed
+        user_states[message.from_user.id]["completed"] = True
+
+        # Send the file to the user
+        await message.reply_document(
+            document="/mnt/data/my_files/requested_file.mp4",  # File path updated
+            caption="Here is your requested file!"
         )
+    else:
+        await message.reply_text("I couldn't understand your request. Please restart.")
