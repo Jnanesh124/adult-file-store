@@ -1,24 +1,31 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from helper_func import encode, decode, get_message_id
+import logging
 
-# Main bot credentials
-MAIN_API_ID = 21942125  # Main bot API ID
-MAIN_API_HASH = "6d412af77ce89f5bb1ed8971589d61b5"  # Main bot API Hash
-MAIN_BOT_TOKEN = "7850868885:AAFc5n1OJ3egi7M3mLeJZI0ACyPDprbY_H8"  # Main bot token
+# Configure logging
+logging.basicConfig(level=logging.INFO)
 
-# Secondary bot credentials
-SECONDARY_API_ID = 123456  # Replace with secondary bot API ID
-SECONDARY_API_HASH = "abcdef1234567890abcdef1234567890"  # Replace with secondary bot API Hash
-SECONDARY_BOT_TOKEN = "123456789:ABCDEF1234567890abcdef"  # Replace with secondary bot token
+# API credentials for the main bot
+MAIN_API_ID = 21942125  # Your Main Bot API ID
+MAIN_API_HASH = "6d412af77ce89f5bb1ed8971589d61b5"  # Your Main Bot API Hash
+MAIN_BOT_TOKEN = "7850868885:AAFc5n1OJ3egi7M3mLeJZI0ACyPDprbY_H8"  # Your Main Bot Token
 
-# Initialize the bots
+# API credentials for the secondary bot (if needed)
+SECOND_API_ID = 12345678  # Replace with your Secondary Bot API ID
+SECOND_API_HASH = "abcdef1234567890abcdef1234567890"  # Replace with your Secondary Bot API Hash
+SECOND_BOT_TOKEN = "123456789:ABCDEF1234567890abcdef1234567890"  # Replace with your Secondary Bot Token
+
+# Initialize bot clients
 MainBot = Client("MainBot", api_id=MAIN_API_ID, api_hash=MAIN_API_HASH, bot_token=MAIN_BOT_TOKEN)
-SecondaryBot = Client("SecondaryBot", api_id=SECONDARY_API_ID, api_hash=SECONDARY_API_HASH, bot_token=SECONDARY_BOT_TOKEN)
+SecondBot = Client("SecondBot", api_id=SECOND_API_ID, api_hash=SECOND_API_HASH, bot_token=SECOND_BOT_TOKEN)
 
-# Command: /batch (Main Bot)
+# Command: /batch
 @MainBot.on_message(filters.private & filters.command('batch'))
 async def batch(client: Client, message: Message):
+    logging.info(f"Batch command triggered by user: {message.from_user.id}")
+    
+    # Step 1: Get the first message ID
     while True:
         try:
             first_message = await client.ask(
@@ -27,61 +34,75 @@ async def batch(client: Client, message: Message):
                 filters=(filters.forwarded | (filters.text & ~filters.forwarded)),
                 timeout=60
             )
-        except:
+        except Exception as e:
+            await message.reply_text(f"❌ Error: {e}\n\nPlease try again.")
             return
+        
         f_msg_id = await get_message_id(client, first_message)
         if f_msg_id:
             break
         else:
             await first_message.reply(
-                "❌ Error\n\nThis Forwarded Post is not from my DB Channel or this Link is taken from DB Channel",
+                "❌ Error\n\nThis Forwarded Post is not from my DB Channel or this Link is invalid.",
                 quote=True
             )
-            continue
 
+    # Step 2: Get the last message ID
     while True:
         try:
             second_message = await client.ask(
-                text="Forward the Last Message from DB Channel (with Quotes)..\nor Send the DB Channel Post link",
+                text="Forward the Last Message from DB Channel (with Quotes)..\n\nor Send the DB Channel Post link",
                 chat_id=message.from_user.id,
                 filters=(filters.forwarded | (filters.text & ~filters.forwarded)),
                 timeout=60
             )
-        except:
+        except Exception as e:
+            await message.reply_text(f"❌ Error: {e}\n\nPlease try again.")
             return
+        
         s_msg_id = await get_message_id(client, second_message)
         if s_msg_id:
             break
         else:
             await second_message.reply(
-                "❌ Error\n\nThis Forwarded Post is not from my DB Channel or this Link is taken from DB Channel",
+                "❌ Error\n\nThis Forwarded Post is not from my DB Channel or this Link is invalid.",
                 quote=True
             )
-            continue
 
-    # Generate deep link
-    string = f"get-{f_msg_id * abs(client.db_channel.id)}-{s_msg_id * abs(client.db_channel.id)}"
-    encoded_string = await encode(string)
-    redirect_link = f"https://t.me/{client.username}?start={encoded_string}"
+    # Generate the deep link
+    try:
+        string = f"get-{f_msg_id * abs(client.db_channel.id)}-{s_msg_id * abs(client.db_channel.id)}"
+        encoded_string = await encode(string)
+        redirect_link = f"https://t.me/{client.username}?start={encoded_string}"
 
-    reply_markup = InlineKeyboardMarkup(
-        [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={redirect_link}')]]
-    )
-    await second_message.reply_text(
-        f"<strong>480P 720P 720PHEVC 1080P 📂\n\n{redirect_link}\n\n"
-        "▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️\nJoin Backup channel @JN2FLIX\n▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️</strong>",
-        quote=True,
-        reply_markup=reply_markup
-    )
+        reply_markup = InlineKeyboardMarkup(
+            [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={redirect_link}')]]
+        )
+        await second_message.reply_text(
+            f"<strong>480P 720P 720PHEVC 1080P 📂\n\n{redirect_link}\n\n"
+            "▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️\nJoin Backup channel @JN2FLIX\n▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️</strong>",
+            quote=True,
+            reply_markup=reply_markup
+        )
+    except Exception as e:
+        await message.reply_text(f"❌ Unexpected Error: {e}")
 
-# Command: /start (Main Bot)
+# Command: /start
 @MainBot.on_message(filters.private & filters.command('start'))
-async def start_main(client: Client, message: Message):
+async def start(client: Client, message: Message):
+    logging.info(f"Start command triggered by user: {message.from_user.id}")
+    
     if len(message.command) > 1:
+        # Extract the start parameter
         parameter = message.command[1]
-        decoded = await decode(parameter)
+        try:
+            decoded = await decode(parameter)
+        except Exception as e:
+            await message.reply_text(f"❌ Invalid parameter: {e}")
+            return
 
         if decoded.startswith("get-"):
+            # Redirect to the first HTML page with the parameter
             html_link = f"https://jn2flix.blogspot.com/2025/01/j1.html?JN2FLIX={parameter}"
             await message.reply_text(
                 "Click the button below to proceed to the link:",
@@ -99,32 +120,12 @@ async def start_main(client: Client, message: Message):
             )
         )
 
-# Command: /help (Secondary Bot)
-@SecondaryBot.on_message(filters.private & filters.command('help'))
-async def help_secondary(client: Client, message: Message):
-    await message.reply_text(
-        "This is the secondary bot. You can use this bot for additional commands or support.",
-        reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("Main Bot", url="https://t.me/MainBot")]]
-        )
-    )
-
-# Command: /start (Secondary Bot)
-@SecondaryBot.on_message(filters.private & filters.command('start'))
-async def start_secondary(client: Client, message: Message):
-    await message.reply_text(
-        "Welcome to the secondary bot! Use /help for assistance.",
-        reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("Help", url="https://t.me/JN2FLIX")]]
-        )
-    )
-
 # Run both bots
 if __name__ == "__main__":
     try:
         MainBot.start()
-        SecondaryBot.start()
-        print("Both bots are running...")
+        SecondBot.start()
+        logging.info("Both bots started successfully.")
         MainBot.idle()
     except KeyboardInterrupt:
-        print("Bots stopped.")
+        logging.info("Bot stopped.")
