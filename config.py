@@ -1,90 +1,148 @@
-import os
+import asyncio
 import logging
-from logging.handlers import RotatingFileHandler
-
-#Bot token @Botfather
-TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "")
-
-#Your API ID & API HASH from my.telegram.org [https://youtu.be/gZQJ-yTMkEo?si=H4NlUUgjsIc5btzH]
-#Your API ID from my.telegram.org
-APP_ID = int(os.environ.get("APP_ID", "22505271"))
-
-#Your API Hash from my.telegram.org
-API_HASH = os.environ.get("API_HASH", "c89a94fcfda4bc06524d0903977fc81e")
-
-#Your db channel Id
-CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1002075726565"))
-
-#OWNER ID
-OWNER_ID = int(os.environ.get("OWNER_ID", "6643562770"))
-
-#Port
-PORT = os.environ.get("PORT", "8585")
-
-#Database 
-#Database [https://youtu.be/qFB0cFqiyOM?si=fVicsCcRSmpuja1A]
-DB_URI = os.environ.get("DATABASE_URL", "mongodb+srv://ultroidxTeam:ultroidxTeam@cluster0.gabxs6m.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-DB_NAME = os.environ.get("DATABASE_NAME", "Cluster0")
-
-#Shortner (token system) 
-# check my discription to help by using my refer link of shareus.io
-# 
-
-SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "Mdisk.pro")
-SHORTLINK_API = os.environ.get("SHORTLINK_API", "766185149277536bd3b9bbf1ccc75cb97a411729")
-VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', 86400)) # Add time in seconds
-IS_VERIFY = os.environ.get("IS_VERIFY", "False")
-TUT_VID = os.environ.get("TUT_VID", "https://youtu.be/tTBBA2wl28k?si=KAZYBHomSloGNhrd") # shareus ka tut_vid he 
-
-#force sub channel id, if you want enable force sub
-FORCE_SUB_CHANNEL = int(os.environ.get("FORCE_SUB_CHANNEL", "-1002108419450"))
-
-TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "4"))
-
-#start message
-START_MSG = os.environ.get("START_MESSAGE", "<blockquote>I can store private files in Specified Channel and other users can access it from special link.\n\n{uptime}</blockquote>")
-try:
-    ADMINS=[]
-    for x in (os.environ.get("ADMINS", "6643562770 6643562770 6643562770").split()):
-        ADMINS.append(int(x))
-except ValueError:
-        raise Exception("Your Admins list does not contain valid integers.")
-
-#Force sub message 
-FORCE_MSG = os.environ.get("FORCE_SUB_MESSAGE", "You need to join in my Channel and subscribe my youtube channel to use me\n\nhttps://youtube.com/@jn2flix?si=VsjRku4VVTjNi5xL\n<blockquote>Kindly Please join Channel<\blockquote></b>")
-
-#set your Custom Caption here, Keep None for Disable Custom Caption
-CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", None)
-
-#set True if you want to prevent users from forwarding files from bot
-PROTECT_CONTENT = True if os.environ.get('PROTECT_CONTENT', "False") == "True" else False
-
-#Set true if you want Disable your Channel Posts Share button
-DISABLE_CHANNEL_BUTTON = os.environ.get("DISABLE_CHANNEL_BUTTON", None) == 'True'
-
-BOT_STATS_TEXT = "<b>BOT UPTIME</b>\n{uptime}"
-USER_REPLY_TEXT = "for adult video use this bots\nhttps://t.me/desibhabhisexxxbot\nhttps://t.me/Brazzer_denial_bot\nhttps://t.me/kannada_Sexleaked_bot\nhttps://t.me/oyoroomsexpornxxxbot\n\nhttps://t.me/kannada_nudi_video_bot\n\n\nDirect sex video\nhttps://t.me/Adult_Videos_Membership_Bot"
-
-ADMINS.append(OWNER_ID)
-ADMINS.append(6695586027)
-
-LOG_FILE_NAME = "filesharingbot.txt"
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="[%(asctime)s - %(levelname)s] - %(name)s - %(message)s",
-    datefmt='%d-%b-%y %H:%M:%S',
-    handlers=[
-        RotatingFileHandler(
-            LOG_FILE_NAME,
-            maxBytes=50000000,
-            backupCount=10
-        ),
-        logging.StreamHandler()
-    ]
+import time
+from pyrogram import Client, filters
+from pyrogram.enums import ParseMode
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.errors import FloodWait
+from bot import Bot
+from config import (
+    ADMINS,
+    START_MSG,
+    CUSTOM_CAPTION,
+    DISABLE_CHANNEL_BUTTON,
+    PROTECT_CONTENT
 )
-logging.getLogger("pyrogram").setLevel(logging.WARNING)
+from helper_func import get_messages, present_user, add_user
+from database.database import full_userbase
+
+# Logging configuration
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
-def LOGGER(name: str) -> logging.Logger:
-    return logging.getLogger(name)
+@Bot.on_message(filters.command('start') & filters.private)
+async def start_command(client: Client, message: Message):
+    user_id = message.from_user.id
+
+    if not await present_user(user_id):
+        try:
+            await add_user(user_id)
+        except Exception as e:
+            logger.error(f"Failed to add user: {e}")
+
+    if len(message.text) > 7:
+        try:
+            base64_string = message.text.split(" ", 1)[1]
+        except:
+            return
+        _string = await decode(base64_string)
+        argument = _string.split("-")
+        ids = []
+
+        if len(argument) == 3:
+            try:
+                start = int(int(argument[1]) / abs(client.db_channel.id))
+                end = int(int(argument[2]) / abs(client.db_channel.id))
+                ids = range(start, end + 1) if start <= end else range(start, end - 1, -1)
+            except ValueError:
+                return
+        elif len(argument) == 2:
+            try:
+                ids = [int(int(argument[1]) / abs(client.db_channel.id))]
+            except ValueError:
+                return
+
+        temp_msg = await message.reply("Sending, please wait...")
+        try:
+            messages = await get_messages(client, ids)
+        except Exception as e:
+            await message.reply_text("Something went wrong!")
+            logger.error(f"Error fetching messages: {e}")
+            return
+        await temp_msg.delete()
+
+        for msg in messages:
+            caption = (
+                CUSTOM_CAPTION.format(
+                    previouscaption="" if not msg.caption else msg.caption.html,
+                    filename=msg.document.file_name
+                )
+                if bool(CUSTOM_CAPTION) and bool(msg.document) else (msg.caption.html if msg.caption else "")
+            )
+
+            reply_markup = None if DISABLE_CHANNEL_BUTTON else msg.reply_markup
+
+            try:
+                await msg.copy(
+                    chat_id=message.from_user.id,
+                    caption=caption,
+                    parse_mode=ParseMode.HTML,
+                    reply_markup=reply_markup,
+                    protect_content=PROTECT_CONTENT
+                )
+                await asyncio.sleep(0.5)
+            except FloodWait as e:
+                logger.warning(f"FloodWait: Sleeping for {e.x} seconds")
+                await asyncio.sleep(e.x)
+            except Exception as e:
+                logger.error(f"Error copying message: {e}")
+
+    else:
+        reply_markup = InlineKeyboardMarkup(
+            [[InlineKeyboardButton("Main Adult Channel", url='https://t.me/+SmF5dsu_aWQ5ZGFl')]]
+        )
+        await message.reply_text(
+            text=START_MSG.format(
+                first=message.from_user.first_name,
+                last=message.from_user.last_name,
+                username=None if not message.from_user.username else '@' + message.from_user.username,
+                mention=message.from_user.mention,
+                id=message.from_user.id
+            ),
+            reply_markup=reply_markup,
+            disable_web_page_preview=True,
+            quote=True
+        )
+
+
+@Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
+async def get_users(client: Bot, message: Message):
+    users = await full_userbase()
+    await message.reply(f"Total users using this bot: {len(users)}")
+
+
+@Bot.on_message(filters.command('broadcast') & filters.private & filters.user(ADMINS))
+async def broadcast_message(client: Bot, message: Message):
+    if message.reply_to_message:
+        users = await full_userbase()
+        broadcast_msg = message.reply_to_message
+        total, successful, blocked, deleted, unsuccessful = 0, 0, 0, 0, 0
+
+        pls_wait = await message.reply("<i>Broadcasting message... This will take some time</i>")
+        for chat_id in users:
+            try:
+                await broadcast_msg.copy(chat_id)
+                successful += 1
+            except FloodWait as e:
+                await asyncio.sleep(e.x)
+                await broadcast_msg.copy(chat_id)
+                successful += 1
+            except Exception as e:
+                unsuccessful += 1
+                logger.error(f"Failed to send message to {chat_id}: {e}")
+            total += 1
+
+        status = (
+            f"<b><u>Broadcast Completed</u></b>\n\n"
+            f"Total Users: <code>{total}</code>\n"
+            f"Successful: <code>{successful}</code>\n"
+            f"Unsuccessful: <code>{unsuccessful}</code>"
+        )
+        await pls_wait.edit(status)
+    else:
+        await message.reply("<i>Please reply to a message to broadcast it.</i>")
+
+
+if __name__ == "__main__":
+    Bot.run()
