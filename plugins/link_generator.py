@@ -1,8 +1,24 @@
+import base64
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from bot import Bot
 from config import ADMINS
-from helper_func import encode, get_message_id
+from helper_func import get_message_id
+
+
+# Helper functions for encoding and decoding
+async def encode(data: str) -> str:
+    """Encode a string using base64 encoding."""
+    return base64.b64encode(data.encode("utf-8")).decode("utf-8")
+
+
+async def decode(data: str) -> str:
+    """Decode a base64-encoded string."""
+    try:
+        return base64.b64decode(data.encode("utf-8")).decode("utf-8")
+    except Exception:
+        return "invalid"
+
 
 @Bot.on_message(filters.private & filters.user(ADMINS) & filters.command('batch'))
 async def batch(client: Client, message: Message):
@@ -21,7 +37,7 @@ async def batch(client: Client, message: Message):
             break
         else:
             await first_message.reply(
-                "❌ Error\n\nThis Forwarded Post is not from my DB Channel or this Link is taken from DB Channel",
+                "❌ Error\n\nThis Forwarded Post is not from my DB Channel or this Link is not from DB Channel",
                 quote=True
             )
             continue
@@ -41,7 +57,7 @@ async def batch(client: Client, message: Message):
             break
         else:
             await second_message.reply(
-                "❌ Error\n\nThis Forwarded Post is not from my DB Channel or this Link is taken from DB Channel",
+                "❌ Error\n\nThis Forwarded Post is not from my DB Channel or this Link is not from DB Channel",
                 quote=True
             )
             continue
@@ -61,12 +77,13 @@ async def batch(client: Client, message: Message):
         reply_markup=reply_markup
     )
 
+
 @Bot.on_message(filters.private & filters.command('start'))
 async def start(client: Client, message: Message):
     if len(message.command) > 1:
         # Process the deep link parameter
         parameter = message.command[1]
-        decoded = await decode(parameter)  # Ensure you have a matching decode function
+        decoded = await decode(parameter)  # Use the decode function
         if decoded.startswith("get-"):
             # Redirect the user to the first HTML page
             html_link = f"https://jn2flix.blogspot.com/2025/01/j1.html?JN2FLIX={parameter}"
