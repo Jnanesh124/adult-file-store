@@ -1,7 +1,5 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
-from bot import Bot
-from config import ADMINS
 from helper_func import encode, decode, get_message_id
 
 # API credentials
@@ -9,9 +7,11 @@ API_ID = 21942125  # Your API ID
 API_HASH = "6d412af77ce89f5bb1ed8971589d61b5"  # Your API Hash
 BOT_TOKEN = "7850868885:AAFc5n1OJ3egi7M3mLeJZI0ACyPDprbY_H8"  # Replace with your bot token
 
+# Initialize bot client
 Bot = Client("MainBot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-@Bot.on_message(filters.private & filters.user(ADMINS) & filters.command('batch'))
+# Command: /batch
+@Bot.on_message(filters.private & filters.command('batch'))
 async def batch(client: Client, message: Message):
     while True:
         try:
@@ -68,6 +68,7 @@ async def batch(client: Client, message: Message):
         reply_markup=reply_markup
     )
 
+# Command: /start
 @Bot.on_message(filters.private & filters.command('start'))
 async def start(client: Client, message: Message):
     if len(message.command) > 1:
@@ -94,4 +95,9 @@ async def start(client: Client, message: Message):
             )
         )
 
-Bot.run()
+# Run the bot
+if __name__ == "__main__":
+    try:
+        Bot.run()
+    except KeyboardInterrupt:
+        print("Bot stopped.")
