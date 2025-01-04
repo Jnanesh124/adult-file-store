@@ -7,7 +7,7 @@ import re
 import asyncio
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
-from config import FORCE_SUB_CHANNEL, ADMINS
+from config import FORCE_SUB_CHANNEL, ADMINS, AUTO_DELETE_TIME, AUTO_DEL_SUCCESS_MSG
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant
 from pyrogram.errors import FloodWait
 from shortzy import Shortzy
@@ -145,6 +145,17 @@ def get_readable_time(seconds: int) -> str:
     up_time += ":".join(time_list)
     return up_time
 
+async def delete_file(messages, client, process):
+    await asyncio.sleep(AUTO_DELETE_TIME)
+    for msg in messages:
+        try:
+            await client.delete_messages(chat_id=msg.chat.id, message_ids=[msg.id])
+        except Exception as e:
+            await asyncio.sleep(e.x)
+            print(f"The attempt to delete the media {msg.id} was unsuccessful: {e}")
+
+    await process.edit_text(AUTO_DEL_SUCCESS_MSG)
+    
 # New functions for thumbnail generation
 def create_image_thumbnail(input_image_path, output_image_path, size=(128, 128)):
     with Image.open(input_image_path) as img:
