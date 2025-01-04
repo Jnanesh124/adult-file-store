@@ -2,21 +2,21 @@ from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from helper_func import encode, decode, get_message_id
 
-# Primary Bot API credentials
-API_ID = 22505271  # Main bot's API ID
-API_HASH = "c89a94fcfda4bc06524d0903977fc81e"  # Main bot's API Hash
-BOT_TOKEN = "7850868885:AAFc5n1OJ3egi7M3mLeJZI0ACyPDprbY_H8"  # Main bot's token
+# Main bot credentials
+MAIN_API_ID = 21942125  # Main bot API ID
+MAIN_API_HASH = "6d412af77ce89f5bb1ed8971589d61b5"  # Main bot API Hash
+MAIN_BOT_TOKEN = "7850868885:AAFc5n1OJ3egi7M3mLeJZI0ACyPDprbY_H8"  # Main bot token
 
-# Secondary Bot API credentials
-SECONDARY_API_ID = 22505271  # Replace with second bot's API ID
-SECONDARY_API_HASH = "c89a94fcfda4bc06524d0903977fc81e"  # Replace with second bot's API Hash
-SECONDARY_BOT_TOKEN = "7850868885:AAFc5n1OJ3egi7M3mLeJZI0ACyPDprbY_H8"  # Replace with second bot's token
+# Secondary bot credentials
+SECONDARY_API_ID = 123456  # Replace with secondary bot API ID
+SECONDARY_API_HASH = "abcdef1234567890abcdef1234567890"  # Replace with secondary bot API Hash
+SECONDARY_BOT_TOKEN = "123456789:ABCDEF1234567890abcdef"  # Replace with secondary bot token
 
-# Initialize both bot clients
-MainBot = Client("MainBot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
-SecondBot = Client("SecondBot", api_id=SECONDARY_API_ID, api_hash=SECONDARY_API_HASH, bot_token=SECONDARY_BOT_TOKEN)
+# Initialize the bots
+MainBot = Client("MainBot", api_id=MAIN_API_ID, api_hash=MAIN_API_HASH, bot_token=MAIN_BOT_TOKEN)
+SecondaryBot = Client("SecondaryBot", api_id=SECONDARY_API_ID, api_hash=SECONDARY_API_HASH, bot_token=SECONDARY_BOT_TOKEN)
 
-
+# Command: /batch (Main Bot)
 @MainBot.on_message(filters.private & filters.command('batch'))
 async def batch(client: Client, message: Message):
     while True:
@@ -74,9 +74,9 @@ async def batch(client: Client, message: Message):
         reply_markup=reply_markup
     )
 
-
+# Command: /start (Main Bot)
 @MainBot.on_message(filters.private & filters.command('start'))
-async def start(client: Client, message: Message):
+async def start_main(client: Client, message: Message):
     if len(message.command) > 1:
         parameter = message.command[1]
         decoded = await decode(parameter)
@@ -99,12 +99,32 @@ async def start(client: Client, message: Message):
             )
         )
 
+# Command: /help (Secondary Bot)
+@SecondaryBot.on_message(filters.private & filters.command('help'))
+async def help_secondary(client: Client, message: Message):
+    await message.reply_text(
+        "This is the secondary bot. You can use this bot for additional commands or support.",
+        reply_markup=InlineKeyboardMarkup(
+            [[InlineKeyboardButton("Main Bot", url="https://t.me/MainBot")]]
+        )
+    )
+
+# Command: /start (Secondary Bot)
+@SecondaryBot.on_message(filters.private & filters.command('start'))
+async def start_secondary(client: Client, message: Message):
+    await message.reply_text(
+        "Welcome to the secondary bot! Use /help for assistance.",
+        reply_markup=InlineKeyboardMarkup(
+            [[InlineKeyboardButton("Help", url="https://t.me/JN2FLIX")]]
+        )
+    )
 
 # Run both bots
 if __name__ == "__main__":
-    MainBot.start()
-    SecondBot.start()
-    print("Both bots are running...")
-    MainBot.idle()  # Keeps the bots running
-    SecondBot.stop()
-    MainBot.stop()
+    try:
+        MainBot.start()
+        SecondaryBot.start()
+        print("Both bots are running...")
+        MainBot.idle()
+    except KeyboardInterrupt:
+        print("Bots stopped.")
