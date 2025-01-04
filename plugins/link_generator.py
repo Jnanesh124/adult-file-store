@@ -15,6 +15,9 @@ BOT_TOKEN_2 = "7850868885:AAFc5n1OJ3egi7M3mLeJZI0ACyPDprbY_H8"  # Replace with y
 # DB Channel ID
 DB_CHANNEL_ID = -1002446680686  # Replace with your actual DB Channel ID
 
+# Admin IDs
+ADMINS = [6643562770]  # Add admin IDs here
+
 # Initialize bots
 MainBot = Client("MainBot", api_id=API_ID_1, api_hash=API_HASH_1, bot_token=BOT_TOKEN_1)
 SecondBot = Client("SecondBot", api_id=API_ID_2, api_hash=API_HASH_2, bot_token=BOT_TOKEN_2)
@@ -26,8 +29,14 @@ SecondBot.db_channel = type("db_channel", (object,), {"id": DB_CHANNEL_ID})
 
 @MainBot.on_message(filters.private & filters.command('batch'))
 async def batch(client: Client, message: Message):
+    # Check if the user is an admin
+    if message.from_user.id not in ADMINS:
+        await message.reply_text("❌ You are not authorized to use this command.")
+        return
+
     while True:
         try:
+            # Ask for the first message
             first_message = await client.ask(
                 text="Forward the **First Message** from DB Channel or send its link:",
                 chat_id=message.from_user.id,
@@ -46,6 +55,7 @@ async def batch(client: Client, message: Message):
 
     while True:
         try:
+            # Ask for the last message
             second_message = await client.ask(
                 text="Now, forward the **Last Message** from DB Channel or send its link:",
                 chat_id=message.from_user.id,
