@@ -15,6 +15,7 @@ import os
 pyrogram.utils.MIN_CHAT_ID = -999999999999
 pyrogram.utils.MIN_CHANNEL_ID = -100999999999999
 
+
 class Bot(Client):
     def __init__(self):
         super().__init__(
@@ -44,8 +45,7 @@ class Bot(Client):
             except Exception as a:
                 self.LOGGER(__name__).warning(a)
                 self.LOGGER(__name__).warning("Bot can't Export Invite link from Force Sub Channel!")
-                self.LOGGER(__name__).warning(f"Please Double check the FORCE_SUB_CHANNEL value and Make sure Bot is Admin in channel with Invite Users via Link Permission, Current Force Sub Channel Value: {FORCE_SUB_CHANNEL}")
-                self.LOGGER(__name__).info("\nBot Stopped. Join https://t.me/ultroid_official for support")
+                self.LOGGER(__name__).warning(f"Please Double-check the FORCE_SUB_CHANNEL value.")
                 sys.exit()
         try:
             db_channel = await self.get_chat(CHANNEL_ID)
@@ -54,19 +54,13 @@ class Bot(Client):
             await test.delete()
         except Exception as e:
             self.LOGGER(__name__).warning(f"Error occurred: {e}")
-            self.LOGGER(__name__).warning(f"CHANNEL_ID: {CHANNEL_ID}, DB Channel ID: {db_channel.id if 'db_channel' in locals() else 'N/A'}")
-            self.LOGGER(__name__).warning(f"Make sure bot is Admin in DB Channel, and Double-check the CHANNEL_ID value.")
-            self.LOGGER(__name__).info("\nBot Stopped. Join https://t.me/ultroid_official for support")
             sys.exit()
 
         self.set_parse_mode(ParseMode.HTML)
-        self.LOGGER(__name__).info(f"Bot Running..!\n\nCreated by \nhttps://t.me/ultroid_official")
-        self.LOGGER(__name__).info(f""" \n\n       
-(っ◔◡◔)っ ♥ ULTROIDOFFICIAL ♥
-░╚════╝░░╚════╝░╚═════╝░╚══════╝
-                                          """)
+        self.LOGGER(__name__).info(f"Bot Running..!\nCreated by https://t.me/ultroid_official")
         self.username = usr_bot_me.username
-        #web-response
+
+        # Web response
         app = web.AppRunner(await web_server())
         await app.setup()
         bind_address = "0.0.0.0"
@@ -79,13 +73,10 @@ class Bot(Client):
         thumbnail_path = "thumbnail.jpg"  # Temporary thumbnail path
 
         if file_path.lower().endswith(('.png', '.jpg', '.jpeg')):
-            # Generate image thumbnail
             create_image_thumbnail(file_path, thumbnail_path)
         elif file_path.lower().endswith(('.mp4', '.mkv', '.avi')):
-            # Generate video thumbnail
             create_video_thumbnail(file_path, thumbnail_path)
 
-        # Send the thumbnail to the user
         if os.path.exists(thumbnail_path):
             with open(thumbnail_path, 'rb') as thumb:
                 await self.send_photo(chat_id=chat_id, photo=thumb)
