@@ -4,6 +4,13 @@ from bot import Bot
 from config import ADMINS
 from helper_func import encode, decode, get_message_id
 
+# API credentials
+API_ID = 21942125  # Your API ID
+API_HASH = "6d412af77ce89f5bb1ed8971589d61b5"  # Your API Hash
+BOT_TOKEN = "7850868885:AAFc5n1OJ3egi7M3mLeJZI0ACyPDprbY_H8"  # Replace with your bot token
+
+Bot = Client("MainBot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+
 @Bot.on_message(filters.private & filters.user(ADMINS) & filters.command('batch'))
 async def batch(client: Client, message: Message):
     while True:
@@ -49,13 +56,13 @@ async def batch(client: Client, message: Message):
     # Generate deep link
     string = f"get-{f_msg_id * abs(client.db_channel.id)}-{s_msg_id * abs(client.db_channel.id)}"
     encoded_string = await encode(string)
-    deep_link = f"https://t.me/{client.username}?start={encoded_string}"
+    redirect_link = f"https://t.me/{client.username}?start={encoded_string}"
 
     reply_markup = InlineKeyboardMarkup(
-        [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={deep_link}')]]
+        [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={redirect_link}')]]
     )
     await second_message.reply_text(
-        f"<strong>480P 720P 720PHEVC 1080P 📂\n\n{deep_link}\n\n"
+        f"<strong>480P 720P 720PHEVC 1080P 📂\n\n{redirect_link}\n\n"
         "▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️\nJoin Backup channel @JN2FLIX\n▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️▪️</strong>",
         quote=True,
         reply_markup=reply_markup
@@ -86,3 +93,5 @@ async def start(client: Client, message: Message):
                 [[InlineKeyboardButton("🔗 Help", url="https://t.me/JN2FLIX")]]
             )
         )
+
+Bot.run()
