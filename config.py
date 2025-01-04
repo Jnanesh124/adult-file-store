@@ -33,7 +33,7 @@ DB_NAME = os.environ.get("DATABASE_NAME", "Cluster0")
 SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "Mdisk.pro")
 SHORTLINK_API = os.environ.get("SHORTLINK_API", "766185149277536bd3b9bbf1ccc75cb97a411729")
 VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', 86400)) # Add time in seconds
-IS_VERIFY = os.environ.get("IS_VERIFY", "True")
+IS_VERIFY = os.environ.get("IS_VERIFY", "False")
 TUT_VID = os.environ.get("TUT_VID", "https://youtu.be/tTBBA2wl28k?si=KAZYBHomSloGNhrd") # shareus ka tut_vid he 
 
 #force sub channel id, if you want enable force sub
