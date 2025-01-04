@@ -1,6 +1,7 @@
 import signal
 import sys
-from bot_instance import Bot  # Import Bot from a renamed or separate file to avoid circular dependency.
+
+from bot import Bot  # Import remains the same since it's the local `bot.py` file
 
 def signal_handler(sig, frame):
     print("Exiting gracefully...")
