@@ -42,7 +42,7 @@ async def batch(client: Client, message: Message):
     base64_string = await encode(string)
     
     # Generate the initial Telegram link
-    initial_telegram_link = f"https://t.me/Adult_Video_Storej2_Bot?start={base64_string}777"
+    initial_telegram_link = f"https://t.me/Adult_Video_Storej2_Bot?JN2FLIX={base64_string}777"
     
     # Generate the blogspot link
     blogspot_link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}777"
@@ -57,7 +57,7 @@ async def batch(client: Client, message: Message):
     async def handle_blogspot(client: Client, message: Message):
         await message.reply_text(f"<strong>\n\n{blogspot_link}\n\n</strong>")
 
-    @Bot.on_message(filters.regex(rf"https://t.me/Adult_Video_Storej2_Bot\?JN2FLIX={base64_string}(?!777)"))
+    @Bot.on_message(filters.regex(rf"https://t.me/Adult_Video_Storej2_Bot\?JN2FLIX={base64_string}(?!777$)"))
     async def handle_direct_file(client: Client, message: Message):
         await message.reply_text(f"<strong>\n\n{direct_file_link}\n\n</strong>")
 
