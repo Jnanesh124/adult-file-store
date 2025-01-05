@@ -13,6 +13,18 @@ from database.database import add_user, del_user, full_userbase, present_user
 
 BROADCASTED_USERS_FILE = "broadcasted_users.json"
 
+# Load the broadcasted users from a file
+def load_broadcasted_users():
+    if os.path.exists(BROADCASTED_USERS_FILE):
+        with open(BROADCASTED_USERS_FILE, "r") as f:
+            return json.load(f)
+    return []
+
+# Save the broadcasted users to a file
+def save_broadcasted_users(broadcasted_users):
+    with open(BROADCASTED_USERS_FILE, "w") as f:
+        json.dump(broadcasted_users, f)
+
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     user_id = message.from_user.id
@@ -164,18 +176,6 @@ async def get_users(client: Bot, message: Message):
     users = await full_userbase()
     await msg.edit(f"{len(users)} users are using this bot")
 
-# Load the broadcasted users from a file
-def load_broadcasted_users():
-    if os.path.exists(BROADCASTED_USERS_FILE):
-        with open(BROADCASTED_USERS_FILE, "r") as f:
-            return json.load(f)
-    return []
-
-# Save the broadcasted users to a file
-def save_broadcasted_users(broadcasted_users):
-    with open(BROADCASTED_USERS_FILE, "w") as f:
-        json.dump(broadcasted_users, f)
-        
 @Bot.on_message(filters.private & filters.command('broadcast') & filters.user(ADMINS))
 async def send_text(client: Client, message: Message):
     if message.reply_to_message:
@@ -189,14 +189,23 @@ async def send_text(client: Client, message: Message):
 
         pls_wait = await message.reply("<i>Broadcasting Message.. This will Take Some Time</i>")
 
-        # Create a list of tasks to send messages in parallel
+        # Load the list of already broadcasted users
+        broadcasted_users = load_broadcasted_users()
+
+        # Filter out already broadcasted users
+        users_to_broadcast = [chat_id for chat_id in query if chat_id not in broadcasted_users]
+
+        # Create a list of tasks for parallel execution
         tasks = []
-        for chat_id in query:
-            task = send_broadcast(broadcast_msg, chat_id)
+        for chat_id in users_to_broadcast:
+            task = send_broadcast(broadcast_msg, chat_id, broadcasted_users)
             tasks.append(task)
 
-        # Run all the tasks concurrently but respect the rate limit
+        # Run all the tasks concurrently
         await asyncio.gather(*tasks)
+
+        # Save the list of broadcasted users
+        save_broadcasted_users(broadcasted_users)
 
         status = f"""<b><u>Broadcast Completed</u>
 
@@ -212,13 +221,14 @@ Unsuccessful: <code>{unsuccessful}</code></b>"""
         await asyncio.sleep(8)
         await msg.delete()
 
-async def send_broadcast(broadcast_msg, chat_id):
+async def send_broadcast(broadcast_msg, chat_id, broadcasted_users):
     global successful, blocked, deleted, unsuccessful
 
     try:
         await broadcast_msg.copy(chat_id)  # Send the broadcast message to the user
+        broadcasted_users.append(chat_id)  # Add user to the list of broadcasted users
         successful += 1
-        await asyncio.sleep(0.03)  # Adjust this sleep to respect rate limits
+        await asyncio.sleep(0.03)  # Adjust sleep to respect rate limits
     except FloodWait as e:
         await asyncio.sleep(e.value)  # Wait the required time before retrying
         await broadcast_msg.copy(chat_id)
@@ -227,5 +237,6 @@ async def send_broadcast(broadcast_msg, chat_id):
         blocked += 1
     except InputUserDeactivated:
         deleted += 1
-    except Exception:
+    except Exception as e:
+        print(f"Error sending message to {chat_id}: {str(e)}")
         unsuccessful += 1
