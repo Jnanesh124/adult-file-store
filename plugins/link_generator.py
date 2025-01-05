@@ -42,7 +42,7 @@ async def batch(client: Client, message: Message):
     base64_string = await encode(string)
     
     # Generate the initial Telegram link
-    initial_telegram_link = f"https://t.me/Adult_Video_Storej2_Bot?JN2FLIX={base64_string}777"
+    initial_telegram_link = f"https://t.me/Adult_Video_Storej2_Bot?start={base64_string}777"
     
     # Generate the blogspot link
     blogspot_link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}777"
