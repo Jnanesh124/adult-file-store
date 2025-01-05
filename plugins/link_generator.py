@@ -1,11 +1,12 @@
 from pyrogram import Client, filters
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from pyrogram.types import Message
 from bot import Bot
 from config import ADMINS
 from helper_func import encode, get_message_id
 
 @Bot.on_message(filters.private & filters.user(ADMINS) & filters.command('batch'))
 async def batch(client: Client, message: Message):
+    # Step 1: Ask for the first message
     while True:
         try:
             first_message = await client.ask(
@@ -19,13 +20,14 @@ async def batch(client: Client, message: Message):
         if f_msg_id:
             break
         else:
-            await first_message.reply("❌ Error\n\nthis Forwarded Post is not from my DB Channel or this Link is taken from DB Channel", quote=True)
+            await first_message.reply("❌ Error\n\nThis Forwarded Post is not from my DB Channel or this Link is not taken from DB Channel", quote=True)
             continue
 
+    # Step 2: Ask for the second message
     while True:
         try:
             second_message = await client.ask(
-                text="Forward the Last Message from DB Channel (with Quotes)..\nor Send the DB Channel Post link",
+                text="Forward the Last Message from DB Channel (with Quotes)..\n\nor Send the DB Channel Post Link",
                 chat_id=message.from_user.id,
                 filters=(filters.forwarded | filters.regex(r"https://t.me/.+"))
             )
@@ -35,53 +37,34 @@ async def batch(client: Client, message: Message):
         if s_msg_id:
             break
         else:
-            await second_message.reply("❌ Error\n\nthis Forwarded Post is not from my DB Channel or this Link is taken from DB Channel", quote=True)
+            await second_message.reply("❌ Error\n\nThis Forwarded Post is not from my DB Channel or this Link is not taken from DB Channel", quote=True)
             continue
 
+    # Step 3: Generate the encoded string
     string = f"get-{f_msg_id * abs(client.db_channel.id)}-{s_msg_id * abs(client.db_channel.id)}"
     base64_string = await encode(string)
-    
-    # Generate the initial Telegram link
-    initial_telegram_link = f"https://t.me/Adult_Video_Storej2_Bot?start={base64_string}"
-    
-    # Generate the blogspot link
-    blogspot_link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}"
 
-    # Generate the direct file Telegram link
-    direct_file_link = f"https://t.me/Adult_Video_Storej2_Bot?start={base64_string}&direct=true"
-    
-    # Send the initial Telegram link with a callback data
-    reply_markup = InlineKeyboardMarkup(
-        [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={initial_telegram_link}'), 
-          InlineKeyboardButton("Click Here", callback_data=base64_string)]]
+    # Step 4: Generate the initial Telegram link
+    initial_telegram_link = f"https://t.me/YourBotUsername?start={base64_string}"
+
+    # Step 5: Send the first link in plain text
+    await second_message.reply_text(
+        f"<strong>Your Link:</strong>\n\n{initial_telegram_link}\n\n"
+        f"Click this link to proceed.",
+        quote=True
     )
-    await second_message.reply_text(f"<strong>\n\n{initial_telegram_link}\n\n</strong>", quote=True, reply_markup=reply_markup)
 
-@Bot.on_callback_query()
-async def handle_click(client: Client, callback_query: CallbackQuery):
-    base64_string = callback_query.data
-    blogspot_link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}"
-    await callback_query.message.edit_text(f"<strong>\n\n{blogspot_link}\n\n</strong>")
+@Bot.on_message(filters.private & filters.regex(r"^/start"))
+async def handle_start(client: Client, message: Message):
+    # Extract the base64 data from the link
+    data = message.text.split(' ', 1)
+    if len(data) == 2:
+        base64_string = data[1]
 
-@Bot.on_message(filters.private & filters.user(ADMINS) & filters.command('genlink'))
-async def link_generator(client: Client, message: Message):
-    while True:
-        try:
-            channel_message = await client.ask(
-                text="Forward Message from the DB Channel (with Quotes)..\nor Send the DB Channel Post link",
-                chat_id=message.from_user.id,
-                filters=(filters.forwarded | filters.regex(r"https://t.me/.+"))
-            )
-        except:
-            return
-        msg_id = await get_message_id(client, channel_message)
-        if msg_id:
-            break
-        else:
-            await channel_message.reply("❌ Error\n\nthis Forwarded Post is not from my DB Channel or this Link is not taken from DB Channel", quote=True)
-            continue
+        # Generate the Blogspot link
+        blogspot_link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}"
 
-    base64_string = await encode(f"get-{msg_id * abs(client.db_channel.id)}")
-    link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}"
-    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]])
-    await channel_message.reply_text(f"<strong>\n\n{link}\n\n</strong>", quote=True, reply_markup=reply_markup)
+        # Send the Blogspot link to the user
+        await message.reply_text(
+            f"<strong>Your Blogspot Link:</strong>\n\n{blogspot_link}"
+        )
