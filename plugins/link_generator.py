@@ -48,21 +48,24 @@ async def batch(client: Client, message: Message):
     blogspot_link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}&type=blog"
     direct_file_link = f"https://t.me/Adult_Video_Storej2_Bot?start={base64_string}&type=file"
 
-    # Send both links for testing
+    # Send the blog link instead of the direct file link
     await second_message.reply_text(
         f"<strong>Blog Link:</strong> {blogspot_link}\n"
-        f"<strong>File Link:</strong> {direct_file_link}",
+        f"<strong>Direct File Link (for reference):</strong> {direct_file_link}",
         quote=True
     )
 
-    # Dynamic handling for blog or file link
-    @Bot.on_message(filters.regex(rf"https://t.me/Adult_Video_Storej2_Bot\?start={base64_string}&type=blog$"))
-    async def handle_blogspot(client: Client, message: Message):
-        await message.reply_text(f"<strong>{blogspot_link}</strong>", quote=True)
 
-    @Bot.on_message(filters.regex(rf"https://t.me/Adult_Video_Storej2_Bot\?start={base64_string}&type=file$"))
-    async def handle_direct_file(client: Client, message: Message):
-        await message.reply_text(f"<strong>{direct_file_link}</strong>", quote=True)
+@Bot.on_message(filters.regex(r"https://t.me/Adult_Video_Storej2_Bot\?start=(.+)&type=file$"))
+async def handle_file_link_as_blog(client: Client, message: Message):
+    # Extract the base64 part of the URL
+    base64_string = message.matches[0].group(1)
+
+    # Generate the corresponding blog link
+    blogspot_link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}&type=blog"
+
+    # Send the blog link instead of the file
+    await message.reply_text(f"<strong>{blogspot_link}</strong>", quote=True)
 
 
 @Bot.on_message(filters.private & filters.user(ADMINS) & filters.command('genlink'))
@@ -91,9 +94,9 @@ async def link_generator(client: Client, message: Message):
     blogspot_link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}&type=blog"
     direct_file_link = f"https://t.me/Adult_Video_Storej2_Bot?start={base64_string}&type=file"
 
-    # Send the blog link for testing
+    # Send the blog link
     await channel_message.reply_text(
         f"<strong>Blog Link:</strong> {blogspot_link}\n"
-        f"<strong>File Link:</strong> {direct_file_link}",
+        f"<strong>Direct File Link (for reference):</strong> {direct_file_link}",
         quote=True
     )
