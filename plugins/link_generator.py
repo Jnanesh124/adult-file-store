@@ -1,6 +1,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from bot import Bot
+from config import ADMINS
 from helper_func import encode, get_message_id
 
 # This handler is for the /batch command
