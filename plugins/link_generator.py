@@ -56,13 +56,13 @@ async def batch(client: Client, message: Message):
 
 @Bot.on_message(filters.private & filters.regex(r"^/start"))
 async def handle_start(client: Client, message: Message):
-    # Extract the base64 data and check for Getfile=true
+    # Extract the base64 data and check for Getfile=true or getlink
     data = message.text.split(' ', 1)
     if len(data) == 2:
         base64_string = data[1]
         
-        # Check if the URL contains the &Getfile=true parameter
-        if "&Getfile=true" in message.text:
+        # Check if the URL contains the &Getfile=true parameter or &getlink
+        if "&Getfile=true" in message.text or "&getlink" in message.text:
             # Provide direct file link
             direct_file_link = f"https://t.me/Adult_Video_Storej2_Bot?start={base64_string}&Getfile=true"
             await message.reply_text(
