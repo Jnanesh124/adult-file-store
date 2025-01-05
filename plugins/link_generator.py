@@ -40,22 +40,27 @@ async def batch(client: Client, message: Message):
                 "❌ Error\n\nThis forwarded post is not from my DB Channel or this link is invalid.", quote=True)
             continue
 
+    # Generate the encoded string
     string = f"get-{f_msg_id * abs(client.db_channel.id)}-{s_msg_id * abs(client.db_channel.id)}"
     base64_string = await encode(string)
 
     # Generate links
-    initial_telegram_link = f"https://t.me/Adult_Video_Storej2_Bot?JN2FLIX={base64_string}777"
-    blogspot_link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}777"
-    direct_file_link = f"https://t.me/Adult_Video_Storej2_Bot?start={base64_string}"
+    blogspot_link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}&type=blog"
+    direct_file_link = f"https://t.me/Adult_Video_Storej2_Bot?start={base64_string}&type=file"
 
-    # Send the initial Telegram link
-    await second_message.reply_text(f"<strong>{initial_telegram_link}</strong>", quote=True)
+    # Send both links for testing
+    await second_message.reply_text(
+        f"<strong>Blog Link:</strong> {blogspot_link}\n"
+        f"<strong>File Link:</strong> {direct_file_link}",
+        quote=True
+    )
 
-    @Bot.on_message(filters.regex(rf"https://t.me/Adult_Video_Storej2_Bot\?JN2FLIX={base64_string}777$"))
+    # Dynamic handling for blog or file link
+    @Bot.on_message(filters.regex(rf"https://t.me/Adult_Video_Storej2_Bot\?start={base64_string}&type=blog$"))
     async def handle_blogspot(client: Client, message: Message):
         await message.reply_text(f"<strong>{blogspot_link}</strong>", quote=True)
 
-    @Bot.on_message(filters.regex(rf"https://t.me/Adult_Video_Storej2_Bot\?JN2FLIX={base64_string}(?!777$)"))
+    @Bot.on_message(filters.regex(rf"https://t.me/Adult_Video_Storej2_Bot\?start={base64_string}&type=file$"))
     async def handle_direct_file(client: Client, message: Message):
         await message.reply_text(f"<strong>{direct_file_link}</strong>", quote=True)
 
@@ -79,13 +84,16 @@ async def link_generator(client: Client, message: Message):
                 "❌ Error\n\nThis forwarded post is not from my DB Channel or this link is invalid.", quote=True)
             continue
 
+    # Generate the encoded string
     base64_string = await encode(f"get-{msg_id * abs(client.db_channel.id)}")
-    link_with_777 = f"https://t.me/Adult_Video_Storej2_Bot?JN2FLIX={base64_string}777"
-    blogspot_link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}777"
-    
-    # Reply with both links for testing purposes
+
+    # Generate blog and file links
+    blogspot_link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}&type=blog"
+    direct_file_link = f"https://t.me/Adult_Video_Storej2_Bot?start={base64_string}&type=file"
+
+    # Send the blog link for testing
     await channel_message.reply_text(
-        f"<strong>Telegram Link with 777:</strong> {link_with_777}\n"
-        f"<strong>Blogspot Link:</strong> {blogspot_link}",
+        f"<strong>Blog Link:</strong> {blogspot_link}\n"
+        f"<strong>File Link:</strong> {direct_file_link}",
         quote=True
     )
