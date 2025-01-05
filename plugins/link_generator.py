@@ -53,7 +53,7 @@ async def batch(client: Client, message: Message):
     # Send the initial Telegram link in text format
     await second_message.reply_text(f"<strong>\n\n{initial_telegram_link}\n\n</strong>", quote=True)
 
-    @Bot.on_message(filters.regex(rf"https://t.me/Adult_Video_Storej2_Bot\?JN2FLIX={base64_string}777"))
+    @Bot.on_message(filters.regex(rf"https://t.me/Adult_Video_Storej2_Bot\?JN2FLIX={base64_string}777$"))
     async def handle_blogspot(client: Client, message: Message):
         await message.reply_text(f"<strong>\n\n{blogspot_link}\n\n</strong>")
 
