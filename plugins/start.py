@@ -17,7 +17,12 @@ BROADCASTED_USERS_FILE = "broadcasted_users.json"
 def load_broadcasted_users():
     if os.path.exists(BROADCASTED_USERS_FILE):
         with open(BROADCASTED_USERS_FILE, "r") as f:
-            return json.load(f)
+            try:
+                data = json.load(f)
+                return data if data else []  # If the data is None or empty, return an empty list
+            except json.JSONDecodeError:
+                print(f"Error decoding JSON from {BROADCASTED_USERS_FILE}. Returning empty list.")
+                return []
     return []
 
 # Save the broadcasted users to a file
