@@ -66,4 +66,3 @@ async def link_generator(client: Client, message: Message):
         f"<strong>Generated Link:</strong>\n{generated_link}",
         quote=True
     )
-print(f"Received start_param: {start_param}")
