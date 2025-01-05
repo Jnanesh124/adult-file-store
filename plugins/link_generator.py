@@ -76,6 +76,6 @@ async def start_handler(client: Client, message: Message):
         else:
             # Default response for other /start cases
             await message.reply_text(
-                "Welcome! This is a bot for generating links.",
+                f"<strong>Redirected to Blog Link:</strong>\n{blogspot_link}",
                 quote=True
             )
