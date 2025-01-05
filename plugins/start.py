@@ -164,9 +164,9 @@ async def get_users(client: Bot, message: Message):
 
 
 @Bot.on_message(filters.private & filters.command('broadcast') & filters.user(ADMINS))
-async def send_text(client: Bot, message: Message):
+async def send_text(client: Client, message: Message):
     if message.reply_to_message:
-        query = await full_userbase()
+        query = await full_userbase()  # Get all user IDs
         broadcast_msg = message.reply_to_message
         total = 0
         successful = 0
@@ -175,28 +175,19 @@ async def send_text(client: Bot, message: Message):
         unsuccessful = 0
 
         pls_wait = await message.reply("<i>Broadcasting Message.. This will Take Some Time</i>")
+
+        # Create a list of tasks to send messages in parallel
+        tasks = []
         for chat_id in query:
-            try:
-                await broadcast_msg.copy(chat_id)
-                successful += 1
-            except FloodWait as e:
-                await asyncio.sleep(e.value)
-                await broadcast_msg.copy(chat_id)
-                successful += 1
-            except UserIsBlocked:
-                await del_user(chat_id)
-                blocked += 1
-            except InputUserDeactivated:
-                await del_user(chat_id)
-                deleted += 1
-            except:
-                unsuccessful += 1
-                pass
-            total += 1
+            task = send_broadcast(broadcast_msg, chat_id)
+            tasks.append(task)
+
+        # Run all the tasks concurrently but respect the rate limit
+        await asyncio.gather(*tasks)
 
         status = f"""<b><u>Broadcast Completed</u>
 
-Total Users: <code>{total}</code>
+Total Users: <code>{len(query)}</code>
 Successful: <code>{successful}</code>
 Blocked Users: <code>{blocked}</code>
 Deleted Accounts: <code>{deleted}</code>
@@ -207,3 +198,21 @@ Unsuccessful: <code>{unsuccessful}</code></b>"""
         msg = await message.reply("Use this command as a reply to any telegram message without spaces.")
         await asyncio.sleep(8)
         await msg.delete()
+
+async def send_broadcast(broadcast_msg, chat_id):
+    global successful, blocked, deleted, unsuccessful
+
+    try:
+        await broadcast_msg.copy(chat_id)  # Send the broadcast message to the user
+        successful += 1
+        await asyncio.sleep(0.03)  # Adjust this sleep to respect rate limits
+    except FloodWait as e:
+        await asyncio.sleep(e.value)  # Wait the required time before retrying
+        await broadcast_msg.copy(chat_id)
+        successful += 1
+    except UserIsBlocked:
+        blocked += 1
+    except InputUserDeactivated:
+        deleted += 1
+    except Exception:
+        unsuccessful += 1
