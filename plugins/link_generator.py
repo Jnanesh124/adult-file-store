@@ -44,20 +44,28 @@ async def batch(client: Client, message: Message):
     string = f"get-{f_msg_id * abs(client.db_channel.id)}-{s_msg_id * abs(client.db_channel.id)}"
     base64_string = await encode(string)
 
-    # Generate the file link (which will trigger the blog link)
+    # Generate the file link (which will redirect to the blog link)
     file_link = f"https://t.me/Adult_Video_Storej2_Bot?start={base64_string}&type=file"
 
     # Send the file link
     await second_message.reply_text(f"<strong>Link:</strong> {file_link}", quote=True)
 
 
-@Bot.on_message(filters.regex(r"^/start (.+)&type=file$"))
-async def redirect_to_blog(client: Client, message: Message):
-    # Extract the base64 part from the /start command
-    base64_string = message.matches[0].group(1)
+@Bot.on_message(filters.command("start") & filters.private)
+async def start_handler(client: Client, message: Message):
+    if message.text.startswith("/start"):
+        # Parse the start parameter
+        start_param = message.text.split(" ", 1)[-1]
+        if "&type=file" in start_param:
+            # Extract the base64 part
+            base64_string = start_param.split("&type=file")[0]
 
-    # Generate the corresponding blog link
-    blogspot_link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}"
+            # Generate the blog link
+            blogspot_link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}"
 
-    # Send the blog link
-    await message.reply_text(f"<strong>Redirected to Blog Link:</strong>\n{blogspot_link}", quote=True)
+            # Send the blog link
+            await message.reply_text(f"<strong>Redirected to Blog Link:</strong>\n{blogspot_link}", quote=True)
+        else:
+            # Handle other start commands or cases
+            await message.reply_text("Welcome! This is a bot for generating links.")
+
