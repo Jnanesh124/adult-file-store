@@ -45,7 +45,7 @@ async def batch(client: Client, message: Message):
     base64_string = await encode(string)
 
     # Generate the file link (which will redirect to the blog link)
-    file_link = f"https://t.me/Adult_Video_Storej2_Bot?start={base64_string}&type=file"
+    file_link = f"/start={base64_string}&type=file"
 
     # Send the file link
     await second_message.reply_text(f"<strong>Link:</strong> {file_link}", quote=True)
