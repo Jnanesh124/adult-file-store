@@ -44,66 +44,12 @@ async def batch(client: Client, message: Message):
     string = f"get-{f_msg_id * abs(client.db_channel.id)}-{s_msg_id * abs(client.db_channel.id)}"
     base64_string = await encode(string)
 
-    # Step 4: Generate the initial Telegram link
+    # Step 4: Generate the initial Telegram link without `&Getfile=true`
     initial_telegram_link = f"https://t.me/Adult_Video_Storej2_Bot?start={base64_string}"
 
-    # Step 5: Generate the Blogspot HTML template
-    blogspot_html = f"""
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Get Your Link</title>
-        <style>
-            body {{
-                font-family: Arial, sans-serif;
-                background-color: #f4f4f4;
-                text-align: center;
-                padding: 20px;
-            }}
-            .container {{
-                background: #fff;
-                padding: 30px;
-                border-radius: 10px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                display: inline-block;
-                margin-top: 50px;
-            }}
-            h1 {{
-                color: #333;
-            }}
-            .btn {{
-                display: inline-block;
-                padding: 10px 20px;
-                font-size: 16px;
-                color: #fff;
-                background: #007bff;
-                border: none;
-                border-radius: 5px;
-                text-decoration: none;
-                cursor: pointer;
-                transition: background 0.3s;
-            }}
-            .btn:hover {{
-                background: #0056b3;
-            }}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>Click to Get Your Blogspot Link</h1>
-            <p>Click the button below to access your Blogspot page.</p>
-            <a href="https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}" class="btn">Get Blogspot Link</a>
-        </div>
-    </body>
-    </html>
-    """
-
-    # Step 6: Send the HTML to the admin
+    # Step 5: Send the first link in plain text
     await second_message.reply_text(
-        f"<strong>Your Blogspot HTML:</strong>\n\n"
-        f"<code>{blogspot_html}</code>",
+        f"<strong>Your First Link:</strong>\n\n{initial_telegram_link}\n\nClick the link to get either the Blogspot link or the direct file link.",
         quote=True
     )
 
@@ -114,10 +60,17 @@ async def handle_start(client: Client, message: Message):
     if len(data) == 2:
         base64_string = data[1]
 
-        # Generate the Blogspot link
-        blogspot_link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}"
+        # Check if the "Getfile=true" flag is in the URL
+        getfile = False
+        if 'Getfile=true' in message.text:
+            getfile = True
 
-        # Send the Blogspot link to the user
-        await message.reply_text(
-            f"<strong>Your Blogspot Link:</strong>\n\n{blogspot_link}"
-        )
+        # If the Getfile flag is set, generate the direct file link
+        if getfile:
+            # You can replace this with the actual link to the direct file
+            direct_file_link = f"https://yourfilelink.com/{base64_string}"
+            await message.reply_text(f"<strong>Your Direct File Link:</strong>\n\n{direct_file_link}")
+        else:
+            # Generate the Blogspot link
+            blogspot_link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}"
+            await message.reply_text(f"<strong>Your Blogspot Link:</strong>\n\n{blogspot_link}")
