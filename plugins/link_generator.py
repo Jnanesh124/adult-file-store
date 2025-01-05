@@ -54,18 +54,28 @@ async def batch(client: Client, message: Message):
 @Bot.on_message(filters.command("start") & filters.private)
 async def start_handler(client: Client, message: Message):
     if message.text.startswith("/start"):
-        # Parse the start parameter
-        start_param = message.text.split(" ", 1)[-1]
-        if "&type=file" in start_param:
-            # Extract the base64 part
+        # Extract the full start parameter
+        try:
+            start_param = message.text.split(" ", 1)[1]
+        except IndexError:
+            start_param = None
+
+        # Check if "type=file" is in the start parameter
+        if start_param and "&type=file" in start_param:
+            # Extract the base64 part before "&type=file"
             base64_string = start_param.split("&type=file")[0]
 
             # Generate the blog link
             blogspot_link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}"
 
             # Send the blog link
-            await message.reply_text(f"<strong>Redirected to Blog Link:</strong>\n{blogspot_link}", quote=True)
+            await message.reply_text(
+                f"<strong>Redirected to Blog Link:</strong>\n{blogspot_link}", 
+                quote=True
+            )
         else:
-            # Handle other start commands or cases
-            await message.reply_text("Welcome! This is a bot for generating links.")
-
+            # Default response for other /start cases
+            await message.reply_text(
+                "Welcome! This is a bot for generating links.",
+                quote=True
+            )
