@@ -11,6 +11,7 @@ from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL
 from helper_func import subscribed, decode, get_messages, delete_file
 from database.database import add_user, del_user, full_userbase, present_user
 
+BROADCASTED_USERS_FILE = "broadcasted_users.json"
 
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
@@ -163,7 +164,18 @@ async def get_users(client: Bot, message: Message):
     users = await full_userbase()
     await msg.edit(f"{len(users)} users are using this bot")
 
+# Load the broadcasted users from a file
+def load_broadcasted_users():
+    if os.path.exists(BROADCASTED_USERS_FILE):
+        with open(BROADCASTED_USERS_FILE, "r") as f:
+            return json.load(f)
+    return []
 
+# Save the broadcasted users to a file
+def save_broadcasted_users(broadcasted_users):
+    with open(BROADCASTED_USERS_FILE, "w") as f:
+        json.dump(broadcasted_users, f)
+        
 @Bot.on_message(filters.private & filters.command('broadcast') & filters.user(ADMINS))
 async def send_text(client: Client, message: Message):
     if message.reply_to_message:
