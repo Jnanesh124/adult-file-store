@@ -53,16 +53,16 @@ async def batch(client: Client, message: Message):
 
 @Bot.on_message(filters.command("start") & filters.private)
 async def start_handler(client: Client, message: Message):
-    if message.text.startswith("/start"):
-        # Extract the full start parameter
-        start_command = message.text.strip()
-        if len(start_command.split()) > 1:  # Check if there's a parameter
-            start_param = start_command.split(" ", 1)[1]  # Extract parameter after /start
-        else:
-            start_param = None
+    # Extract the full command and parameters
+    start_command = message.text.strip()
+    if len(start_command.split()) > 1:  # Check if there's a parameter
+        start_param = start_command.split(" ", 1)[1]  # Extract parameter after /start
+    else:
+        start_param = None
 
-        # Check if the start parameter includes type=file
-        if start_param and "&type=file" in start_param:
+    if start_param:
+        # Check if the parameter contains "&type=file"
+        if "&type=file" in start_param:
             # Extract the base64 string (everything before "&type=file")
             base64_string = start_param.split("&type=file")[0]
 
@@ -74,10 +74,10 @@ async def start_handler(client: Client, message: Message):
                 f"<strong>Redirected to Blog Link:</strong>\n{blogspot_link}", 
                 quote=True
             )
-        else:
-            # Default response if no valid parameter or no type=file
-            await message.reply_text(
-                "Welcome! This is a bot for generating links.",
-                quote=True
-            )
+            return  # End processing since we've handled this case
 
+    # Default response if no valid parameter or no type=file
+    await message.reply_text(
+        "Welcome! This is a bot for generating links.",
+        quote=True
+    )
