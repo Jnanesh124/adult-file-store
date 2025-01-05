@@ -47,9 +47,6 @@ async def batch(client: Client, message: Message):
     # Generate the blogspot link
     blogspot_link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}"
 
-    # Generate the direct file Telegram link
-    direct_file_link = f"https://t.me/Adult_Video_Storej2_Bot?start={base64_string}&direct=true"
-    
     # Send the initial Telegram link
     reply_markup = InlineKeyboardMarkup(
         [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={initial_telegram_link}')]]
