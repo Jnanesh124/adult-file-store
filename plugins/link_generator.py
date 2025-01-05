@@ -45,12 +45,65 @@ async def batch(client: Client, message: Message):
     base64_string = await encode(string)
 
     # Step 4: Generate the initial Telegram link
-    initial_telegram_link = f"https://t.me/YourBotUsername?start={base64_string}"
+    initial_telegram_link = f"https://t.me/Adult_Video_Storej2_Bot?start={base64_string}"
 
-    # Step 5: Send the first link in plain text
+    # Step 5: Generate the Blogspot HTML template
+    blogspot_html = f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Get Your Link</title>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                text-align: center;
+                padding: 20px;
+            }}
+            .container {{
+                background: #fff;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                display: inline-block;
+                margin-top: 50px;
+            }}
+            h1 {{
+                color: #333;
+            }}
+            .btn {{
+                display: inline-block;
+                padding: 10px 20px;
+                font-size: 16px;
+                color: #fff;
+                background: #007bff;
+                border: none;
+                border-radius: 5px;
+                text-decoration: none;
+                cursor: pointer;
+                transition: background 0.3s;
+            }}
+            .btn:hover {{
+                background: #0056b3;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Click to Get Your Blogspot Link</h1>
+            <p>Click the button below to access your Blogspot page.</p>
+            <a href="https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}" class="btn">Get Blogspot Link</a>
+        </div>
+    </body>
+    </html>
+    """
+
+    # Step 6: Send the HTML to the admin
     await second_message.reply_text(
-        f"<strong>Your Link:</strong>\n\n{initial_telegram_link}\n\n"
-        f"Click this link to proceed.",
+        f"<strong>Your Blogspot HTML:</strong>\n\n"
+        f"<code>{blogspot_html}</code>",
         quote=True
     )
 
