@@ -38,7 +38,7 @@ async def channel_post(client: Client, message: Message):
             converted_id = post_message.id * abs(client.db_channel.id)
             string = f"get-{converted_id}"
             base64_string = await encode(string)
-            link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?start={base64_string}"
+            link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}"
 
             # Prepare the caption with the link
             caption = f"<strong>🥵 DIRECT VIDEO 📂 👇\n\n{link}</strong>"
@@ -63,7 +63,7 @@ async def channel_post(client: Client, message: Message):
             converted_id = post_message.id * abs(client.db_channel.id)
             string = f"get-{converted_id}"
             base64_string = await encode(string)
-            link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?start={base64_string}"
+            link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}"
 
             # Prepare the caption with the link
             caption = f"<strong>🥵 DIRECT VIDEO 📂 👇\n\n{link}</strong>"
