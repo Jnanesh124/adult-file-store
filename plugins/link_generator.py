@@ -8,7 +8,11 @@ from helper_func import encode, get_message_id
 async def batch(client: Client, message: Message):
     while True:
         try:
-            first_message = await client.ask(text="Forward the First Message from DB Channel (with Quotes)..\n\nor Send the DB Channel Post Link", chat_id=message.from_user.id, filters=(filters.forwarded | filters.regex(r"https://t.me/.+")))
+            first_message = await client.ask(
+                text="Forward the First Message from DB Channel (with Quotes)..\n\nor Send the DB Channel Post Link",
+                chat_id=message.from_user.id,
+                filters=(filters.forwarded | filters.regex(r"https://t.me/.+"))
+            )
         except:
             return
         f_msg_id = await get_message_id(client, first_message)
@@ -20,7 +24,11 @@ async def batch(client: Client, message: Message):
 
     while True:
         try:
-            second_message = await client.ask(text="Forward the Last Message from DB Channel (with Quotes)..\nor Send the DB Channel Post link", chat_id=message.from_user.id, filters=(filters.forwarded | filters.regex(r"https://t.me/.+")))
+            second_message = await client.ask(
+                text="Forward the Last Message from DB Channel (with Quotes)..\nor Send the DB Channel Post link",
+                chat_id=message.from_user.id,
+                filters=(filters.forwarded | filters.regex(r"https://t.me/.+"))
+            )
         except:
             return
         s_msg_id = await get_message_id(client, second_message)
@@ -34,11 +42,24 @@ async def batch(client: Client, message: Message):
     base64_string = await encode(string)
     
     # Generate the initial Telegram link
-    telegram_link = f"https://t.me/Adult_Video_Storej2_Bot?start={base64_string}"
+    initial_telegram_link = f"https://t.me/Adult_Video_Storej2_Bot?start={base64_string}"
+    
+    # Generate the blogspot link
+    blogspot_link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}"
+
+    # Generate the direct file Telegram link
+    direct_file_link = f"https://t.me/Adult_Video_Storej2_Bot?start={base64_string}&direct=true"
     
     # Send the initial Telegram link
-    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={telegram_link}')]])
-    await second_message.reply_text(f"<strong>\n\n{telegram_link}\n\n</strong>", quote=True, reply_markup=reply_markup)
+    reply_markup = InlineKeyboardMarkup(
+        [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={initial_telegram_link}')]]
+    )
+    await second_message.reply_text(f"<strong>\n\n{initial_telegram_link}\n\n</strong>", quote=True, reply_markup=reply_markup)
+
+    # Wait for the user to click the initial link and then send the blogspot link
+    @client.on_callback_query()
+    async def handle_click(client: Client, callback_query):
+        await callback_query.message.edit_text(f"<strong>\n\n{blogspot_link}\n\n</strong>")
 
 
 @Bot.on_message(filters.private & filters.user(ADMINS) & filters.command('genlink'))
