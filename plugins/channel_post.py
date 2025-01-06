@@ -48,9 +48,9 @@ async def channel_post(client: Client, message: Message):
                 [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]]
             ))
 
-            # Delete the original text message after sending the link
-            await asyncio.sleep(30)
-            await message.delete()
+            # Delete the original media message if it was a media message (not just a text)
+            if message.video or message.document or message.animation:
+                await message.delete()
 
             # Remove the "Please Wait..." message after processing
             await reply_text.delete()
@@ -75,8 +75,9 @@ async def channel_post(client: Client, message: Message):
             ))
             os.remove(thumbnail_path)  # Clean up the downloaded thumbnail
 
-            # Delete the original message after sending the thumbnail and link
-            await message.delete()
+            # Delete the original media message if it was a media message (not just a text)
+            if message.video or message.document or message.animation:
+                await message.delete()
 
         # Remove the "Please Wait..." message after processing
         await reply_text.delete()
