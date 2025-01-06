@@ -11,24 +11,6 @@ from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL
 from helper_func import subscribed, decode, get_messages, delete_file
 from database.database import add_user, del_user, full_userbase, present_user
 
-BROADCASTED_USERS_FILE = "broadcasted_users.json"
-
-# Load the broadcasted users from a file
-def load_broadcasted_users():
-    if os.path.exists(BROADCASTED_USERS_FILE):
-        with open(BROADCASTED_USERS_FILE, "r") as f:
-            try:
-                data = json.load(f)
-                return data if data else []  # If the data is None or empty, return an empty list
-            except json.JSONDecodeError:
-                print(f"Error decoding JSON from {BROADCASTED_USERS_FILE}. Returning empty list.")
-                return []
-    return []
-
-# Save the broadcasted users to a file
-def save_broadcasted_users(broadcasted_users):
-    with open(BROADCASTED_USERS_FILE, "w") as f:
-        json.dump(broadcasted_users, f)
 
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
@@ -182,9 +164,9 @@ async def get_users(client: Bot, message: Message):
     await msg.edit(f"{len(users)} users are using this bot")
 
 @Bot.on_message(filters.private & filters.command('broadcast') & filters.user(ADMINS))
-async def send_text(client: Client, message: Message):
+async def send_text(client: Bot, message: Message):
     if message.reply_to_message:
-        query = await full_userbase()  # Get all user IDs
+        query = await full_userbase()
         broadcast_msg = message.reply_to_message
         total = 0
         successful = 0
@@ -194,54 +176,68 @@ async def send_text(client: Client, message: Message):
 
         pls_wait = await message.reply("<i>Broadcasting Message.. This will Take Some Time</i>")
 
-        # Load the list of already broadcasted users
-        broadcasted_users = load_broadcasted_users()
+        async def send_to_user(chat_id):
+            nonlocal successful, blocked, deleted, unsuccessful
+            try:
+                await broadcast_msg.copy(chat_id)
+                successful += 1
+            except FloodWait as e:
+                return e.x  # Return the sleep time if FloodWait happens
+            except UserIsBlocked:
+                await del_user(chat_id)
+                blocked += 1
+            except InputUserDeactivated:
+                await del_user(chat_id)
+                deleted += 1
+            except:
+                unsuccessful += 1
+            return 0  # No sleep if no issues occurred
 
-        # Filter out already broadcasted users
-        users_to_broadcast = [chat_id for chat_id in query if chat_id not in broadcasted_users]
-
-        # Create a list of tasks for parallel execution
         tasks = []
-        for chat_id in users_to_broadcast:
-            task = send_broadcast(broadcast_msg, chat_id, broadcasted_users)
-            tasks.append(task)
+        max_concurrency = 5  # Set the number of concurrent tasks (adjust based on your bot's limits)
 
-        # Run all the tasks concurrently
-        await asyncio.gather(*tasks)
+        # Start the broadcast with concurrent tasks
+        for chat_id in query:
+            tasks.append(asyncio.ensure_future(send_to_user(chat_id)))
+            if len(tasks) >= max_concurrency:
+                # Wait for a batch of tasks to complete before sending the next batch
+                sleep_time = await asyncio.gather(*tasks)
+                # Sleep for the maximum time from the batch
+                await asyncio.sleep(max(sleep_time))
+                tasks = []  # Clear the tasks to start the next batch
 
-        # Save the list of broadcasted users
-        save_broadcasted_users(broadcasted_users)
+            total += 1
 
-        status = f"""<b><u>Broadcast Completed</u>
+            # Update the status periodically
+            status = f"""<b><u>Broadcast Progress</u>
 
-Total Users: <code>{len(query)}</code>
-Successful: <code>{successful}</code>
+Total Users: <code>{total}</code>
+Sent: <code>{successful}</code>
+Pending: <code>{total - successful - blocked - deleted - unsuccessful}</code>
 Blocked Users: <code>{blocked}</code>
 Deleted Accounts: <code>{deleted}</code>
 Unsuccessful: <code>{unsuccessful}</code></b>"""
+            
+            await pls_wait.edit(status)
 
-        await pls_wait.edit(status)
+        # Wait for any remaining tasks after the loop
+        if tasks:
+            sleep_time = await asyncio.gather(*tasks)
+            await asyncio.sleep(max(sleep_time))
+
+        # Final status after the loop is complete
+        status = f"""<b><u>Broadcast Completed</u>
+
+Total Users: <code>{total}</code>
+Sent: <code>{successful}</code>
+Pending: <code>{total - successful - blocked - deleted - unsuccessful}</code>
+Blocked Users: <code>{blocked}</code>
+Deleted Accounts: <code>{deleted}</code>
+Unsuccessful: <code>{unsuccessful}</code></b>"""
+        
+        return await pls_wait.edit(status)
+
     else:
-        msg = await message.reply("Use this command as a reply to any telegram message without spaces.")
+        msg = await message.reply(REPLY_ERROR)
         await asyncio.sleep(8)
         await msg.delete()
-
-async def send_broadcast(broadcast_msg, chat_id, broadcasted_users):
-    global successful, blocked, deleted, unsuccessful
-
-    try:
-        await broadcast_msg.copy(chat_id)  # Send the broadcast message to the user
-        broadcasted_users.append(chat_id)  # Add user to the list of broadcasted users
-        successful += 1
-        await asyncio.sleep(0.03)  # Adjust sleep to respect rate limits
-    except FloodWait as e:
-        await asyncio.sleep(e.value)  # Wait the required time before retrying
-        await broadcast_msg.copy(chat_id)
-        successful += 1
-    except UserIsBlocked:
-        blocked += 1
-    except InputUserDeactivated:
-        deleted += 1
-    except Exception as e:
-        print(f"Error sending message to {chat_id}: {str(e)}")
-        unsuccessful += 1
