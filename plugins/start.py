@@ -7,7 +7,7 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
 
 from bot import Bot
-from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT, AUTO_DELETE_TIME, AUTO_DELETE_MSG, JOIN_REQUEST_ENABLE, FORCE_SUB_CHANNEL
+from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT, START_PIC, AUTO_DELETE_TIME, AUTO_DELETE_MSG, JOIN_REQUEST_ENABLE, FORCE_SUB_CHANNEL
 from helper_func import subscribed, decode, get_messages, delete_file
 from database.database import add_user, del_user, full_userbase, present_user
 
@@ -101,24 +101,46 @@ async def start_command(client: Client, message: Message):
         reply_markup = InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton("MAIN CHANNEL", url=f"t.me/JN2FLIX"),
-                    InlineKeyboardButton("🔒 Close ", callback_data="close")
+                    InlineKeyboardButton("🥵 Adult Update Channel ", url=f"t.me/JN2FLIX"),
                 ]
             ]
         )
+        if START_PIC:  # Check if START_PIC has a value
+            await message.reply_photo(
+                photo=START_PIC,
+                caption=START_MSG.format(
+                    first=message.from_user.first_name,
+                    last=message.from_user.last_name,
+                    username=None if not message.from_user.username else '@' + message.from_user.username,
+                    mention=message.from_user.mention,
+                    id=message.from_user.id
+                ),
+                reply_markup=reply_markup,
+                quote=True
+            )
+        else:  # If START_PIC is empty, send only the text
+            await message.reply_text(
+                text=START_MSG.format(
+                    first=message.from_user.first_name,
+                    last=message.from_user.last_name,
+                    username=None if not message.from_user.username else '@' + message.from_user.username,
+                    mention=message.from_user.mention,
+                    id=message.from_user.id
+                ),
+                reply_markup=reply_markup,
+                disable_web_page_preview=True,
+                quote=True
+            )
+        return
 
-        await message.reply_text(
-            text=START_MSG.format(
-                first=message.from_user.first_name,
-                last=message.from_user.last_name,
-                username=None if not message.from_user.username else '@' + message.from_user.username,
-                mention=message.from_user.mention,
-                id=message.from_user.id
-            ),
-            reply_markup=reply_markup,
-            disable_web_page_preview=True,
-            quote=True
-        )
+    
+#=====================================================================================##
+
+WAIT_MSG = """"<b>Processing ...</b>"""
+
+REPLY_ERROR = """<code>Use this command as a replay to any telegram message with out any spaces.</code>"""
+
+#=====================================================================================##
 
 
 @Bot.on_message(filters.command('start') & filters.private)
