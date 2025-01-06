@@ -44,7 +44,7 @@ JOIN_REQUEST_ENABLE = os.environ.get("JOIN_REQUEST_ENABLED", None)
 TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "4"))
 
 #start message
-START_PIC = os.environ.get("START_PIC","https://admin.gskloots.tech/uploads/6779462204dc8.jpg")
+START_PIC = os.environ.get("START_PIC","https://ibb.co/d21BJhX")
 START_MSG = os.environ.get("START_MESSAGE", "<blockquote>I can store private files in Specified Channel and other users can access it from special link.\n\n©️@JN2FLIX</blockquote>")
 try:
     ADMINS=[]
