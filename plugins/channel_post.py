@@ -49,6 +49,7 @@ async def channel_post(client: Client, message: Message):
             ))
 
             # Delete the original text message after sending the link
+            await asyncio.sleep(30)
             await message.delete()
 
             # Remove the "Please Wait..." message after processing
