@@ -20,5 +20,6 @@ aiofiles
 asyncio
 python-telegram-bot
 pillow
-ffmpeg
+ffmpeg-python
+opencv-python-headless
 PyPDF2
