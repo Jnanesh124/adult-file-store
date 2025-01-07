@@ -4,7 +4,7 @@ import logging
 import ffmpeg
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-from config import ADMINS, API_ID, API_HASH, BOT_TOKEN
+from config import ADMINS, APP_ID, API_HASH, TG_BOT_TOKEN
 
 # Configure logging
 logging.basicConfig(
@@ -14,7 +14,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Initialize the bot
-Bot = Client("adult_file_store", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+Bot = Client("adult_file_store", api_id=APP_ID, api_hash=API_HASH, bot_token=TG_BOT_TOKEN)
 
 @Bot.on_message(filters.private & filters.user(ADMINS))
 async def receive_file(client: Client, message: Message):
