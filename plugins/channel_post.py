@@ -21,9 +21,9 @@ async def channel_post(client: Client, message: Message):
         return
 
     buttons = [
-        [InlineKeyboardButton("🎞 Generate Sample Video", callback_data=f"generate_sample|{message.message_id}")],
-        [InlineKeyboardButton("📸 Generate Screenshot", callback_data=f"generate_screenshot|{message.message_id}")],
-        [InlineKeyboardButton("🖼 Extract Thumbnail", callback_data=f"extract_thumbnail|{message.message_id}")]
+        [InlineKeyboardButton("🎞 Generate Sample Video", callback_data=f"generate_sample|{message.id}")],
+        [InlineKeyboardButton("📸 Generate Screenshot", callback_data=f"generate_screenshot|{message.id}")],
+        [InlineKeyboardButton("🖼 Extract Thumbnail", callback_data=f"extract_thumbnail|{message.id}")]
     ]
 
     await message.reply_text(
