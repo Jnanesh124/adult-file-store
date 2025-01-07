@@ -21,15 +21,16 @@ async def channel_post(client: Client, message: Message):
         return
 
     buttons = [
-        [InlineKeyboardButton("🎞 Generate Sample Video", callback_data="generate_sample")],
-        [InlineKeyboardButton("📸 Generate Screenshot", callback_data="generate_screenshot")],
-        [InlineKeyboardButton("🖼 Extract Thumbnail", callback_data="extract_thumbnail")]
+        [InlineKeyboardButton("🎞 Generate Sample Video", callback_data=f"generate_sample|{message.message_id}")],
+        [InlineKeyboardButton("📸 Generate Screenshot", callback_data=f"generate_screenshot|{message.message_id}")],
+        [InlineKeyboardButton("🖼 Extract Thumbnail", callback_data=f"extract_thumbnail|{message.message_id}")]
     ]
 
     await message.reply_text(
         "What would you like to do?",
         reply_markup=InlineKeyboardMarkup(buttons)
     )
+
 
 async def generate_sample_video(client: Client, file_id: str, message: Message):
     sample_path = f"sample_{file_id}.mp4"
@@ -45,6 +46,7 @@ async def generate_sample_video(client: Client, file_id: str, message: Message):
         logging.error(f"Error generating sample video: {e}")
         await message.reply_text("Failed to generate sample video.")
 
+
 async def generate_screenshot(client: Client, file_id: str, message: Message):
     screenshot_path = f"screenshot_{file_id}.jpg"
     try:
@@ -58,6 +60,7 @@ async def generate_screenshot(client: Client, file_id: str, message: Message):
     except Exception as e:
         logging.error(f"Error generating screenshot: {e}")
         await message.reply_text("Failed to generate screenshot.")
+
 
 async def extract_thumbnail(client: Client, file_id: str, message: Message):
     thumbnail_path = f"thumbnail_{file_id}.jpg"
@@ -73,6 +76,7 @@ async def extract_thumbnail(client: Client, file_id: str, message: Message):
         logging.error(f"Error extracting thumbnail: {e}")
         await message.reply_text("Failed to extract thumbnail.")
 
+
 @Bot.on_callback_query()
 async def handle_callbacks(client: Client, callback_query: CallbackQuery):
     user = callback_query.from_user.id
@@ -84,30 +88,44 @@ async def handle_callbacks(client: Client, callback_query: CallbackQuery):
         return
 
     await callback_query.answer("Processing...")
+
+    # Extract the action and original message ID from the callback data
+    try:
+        action, original_message_id = data.split("|")
+    except ValueError:
+        logging.error("Invalid callback data format.")
+        return
+
+    # Fetch the original message to retrieve the file
+    original_message = await client.get_messages(chat_id=callback_query.message.chat.id, message_ids=int(original_message_id))
+    if not original_message or not (original_message.video or original_message.document):
+        await message.edit_text("Original media not found.")
+        return
+
     msg = await message.reply_text("Downloading media...")
 
     try:
-        if message.reply_to_message.video:
-            file_id = message.reply_to_message.video.file_id
-        elif message.reply_to_message.document and message.reply_to_message.document.mime_type.startswith("video/"):
-            file_id = message.reply_to_message.document.file_id
+        if original_message.video:
+            file_id = original_message.video.file_id
+        elif original_message.document and original_message.document.mime_type.startswith("video/"):
+            file_id = original_message.document.file_id
         else:
             await msg.edit_text("Unsupported file type.")
             return
 
-        # Handle callbacks for sample video, screenshot, and thumbnail
-        if data == "generate_sample":
-            await generate_sample_video(client, file_id, message)
-        elif data == "generate_screenshot":
-            await generate_screenshot(client, file_id, message)
-        elif data == "extract_thumbnail":
-            await extract_thumbnail(client, file_id, message)
+        if action == "generate_sample":
+            await generate_sample_video(client, file_id, original_message)
+        elif action == "generate_screenshot":
+            await generate_screenshot(client, file_id, original_message)
+        elif action == "extract_thumbnail":
+            await extract_thumbnail(client, file_id, original_message)
 
         await msg.delete()
 
     except Exception as e:
         logging.error(f"Error in callback: {e}")
         await msg.edit_text("Something went wrong!")
+
 
 @Bot.on_message(filters.channel & filters.incoming)
 async def new_post(client: Client, message: Message):
