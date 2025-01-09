@@ -41,7 +41,7 @@ async def channel_post(client: Client, message: Message):
             link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}"
 
             # Prepare the caption with the link
-            caption = f"<strong>🥵 DIRECT VIDEO 📂 👇\n\n{link}</strong>"
+            caption = f"<strong>🥵 DIRECT VIDEO 📂 👇\n\n{link}\n\n📩 How To Open @How_to_open_link_rockersbot</strong>"
 
             # Send the link without a thumbnail (if no media)
             await message.reply_text(caption, reply_markup=InlineKeyboardMarkup(
@@ -67,7 +67,7 @@ async def channel_post(client: Client, message: Message):
             link = f"https://jn2flix.blogspot.com/2025/01/adultx.html?JN2FLIX={base64_string}"
 
             # Prepare the caption with the link
-            caption = f"<strong>🥵 DIRECT VIDEO 📂 👇\n\n{link}</strong>"
+            caption = f"<strong>🥵 DIRECT VIDEO 📂 👇\n\n{link}\n\n📩 How To Open @How_to_open_link_rockersbot</strong>"
 
             # Send the thumbnail with the link in the caption
             await message.reply_photo(photo=thumbnail_path, caption=caption, reply_markup=InlineKeyboardMarkup(
