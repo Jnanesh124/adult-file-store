@@ -156,21 +156,26 @@ async def not_joined(client: Client, message: Message):
 
     buttons = [
         [
-            InlineKeyboardButton("Join Channel", url=f"https://t.me/+0S0i5fWcJUZjODJl")]
-        ],[
-                InlineKeyboardButton(
-                "Join Channel",
-                url=ButtonUrl),
-               InlineKeyboardButton(
-                "Join Channel",
-                url =f"https://t.me/+jc7Wwu1pxMc1MTFl")]
-    try:
-        buttons.append([
             InlineKeyboardButton(
-                text='Try Again',
-                url=f"https://t.me/{client.username}?start={message.command[1]}"
-            )
-        ])
+                "Join Channel",
+                url =f"https://t.me/+0S0i5fWcJUZjODJl"),
+             InlineKeyboardButton(
+                "Join Channel",
+                url = ButtonUrl)
+        ],[
+            InlineKeyboardButton(
+                "Join Channel",
+                url =f"https://t.me/+jc7Wwu1pxMc1MTFl")
+        ]]
+    try:
+        buttons.append(
+            [
+                InlineKeyboardButton(
+                    text = 'Try Again',
+                    url = f"https://t.me/{client.username}?start={message.command[1]}"
+                )
+            ]
+        )
     except IndexError:
         pass
 
