@@ -216,7 +216,7 @@ async def start_command(client: Client, message: Message):
                     [InlineKeyboardButton("Click here", url=link)],
                     [InlineKeyboardButton('How to use the bot', url=TUT_VID)]
                 ]
-                await message.reply(f"Your Ads token is expired, refresh your token and try again.\n\nToken Timeout: {get_exp_time(VERIFY_EXPIRE)}\n\nWhat is the token?\n\nThis is an ads token. If you pass 1 ad, you can use the bot for 24 Hour after passing the ad.", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
+                await message.reply(f"<strong>U Need To Verify 1 Time\n\nAfter 24HOUR Free✅\n\nafter no one can tauch u</strong>", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
 
 
         
@@ -233,12 +233,17 @@ REPLY_ERROR = """<code>Use this command as a replay to any telegram message with
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
     buttons = [
-        [
+        [   InlineKeyboardButton(
+                "Join Channel",
+                url =f"https://t.me/+0S0i5fWcJUZjODJl"),
             InlineKeyboardButton(
                 "Join Channel",
                 url = client.invitelink)
-        ]
-    ]
+        ],[
+            InlineKeyboardButton(
+                "Join Channel",
+                url =f"https://t.me/+jc7Wwu1pxMc1MTFl")
+    ]]
     try:
         buttons.append(
             [
