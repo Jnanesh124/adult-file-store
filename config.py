@@ -35,8 +35,8 @@ DELETE_INFORM = os.environ.get("INFORM" , "Successfully DELETED !! For Video Ava
 NOTIFICATION = os.environ.get("NOTIFICATION" ,"🥵u want direct sex video all type oyo,kannada,rp,nudi,desi,english,lesibian,shemale,more type than msg here to buy https://t.me/Adult_Videos_Membership_Bot")
 GET_INFORM = os.environ.get("GET_INFORM" ,"File was deleted after {DELETE_AFTER} seconds. Use the button below to GET FILE AGAIN.")
 
-BAN = int(os.environ.get("BAN", "")) #Owner user id - dont chnge 
-OWNER = os.environ.get("OWNER", "") #Owner username
+BAN = int(os.environ.get("BAN", "6643562770")) #Owner user id - dont chnge 
+OWNER = os.environ.get("OWNER", "janugowda") #Owner username
 OWNER_ID = int(os.environ.get("OWNER_ID", "6643562770")) #Owner user id
 OWNER_USERNAME = os.environ.get('OWNER_USERNAME', 'janugowda')
 SUPPORT_GROUP = os.environ.get("SUPPORT_GROUP", "JN2FLIX") # WITHOUR @
