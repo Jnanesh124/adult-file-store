@@ -3,27 +3,27 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 #Bot token @Botfather
-TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "")
+TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "7820594648:AAElYLOYY3Nx3O7U0W3iqaNqrY-pQJXItX")
 
 #Your API ID & API HASH from my.telegram.org [https://youtu.be/gZQJ-yTMkEo?si=H4NlUUgjsIc5btzH]
 #Your API ID from my.telegram.org
-APP_ID = int(os.environ.get("APP_ID", "22505271"))
+APP_ID = int(os.environ.get("APP_ID", "21942125"))
 
 #Your API Hash from my.telegram.org
-API_HASH = os.environ.get("API_HASH", "c89a94fcfda4bc06524d0903977fc81e")
+API_HASH = os.environ.get("API_HASH", "6d412af77ce89f5bb1ed8971589d61b5")
 
 #Your db channel Id
-CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1002075726565"))
+CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1002205211966"))
 
 #OWNER ID
-OWNER_ID = int(os.environ.get("OWNER_ID", "6695586027"))
+OWNER_ID = int(os.environ.get("OWNER_ID", "6643562770"))
 
 #Port
 PORT = os.environ.get("PORT", "8585")
 
 #Database 
 #Database [https://youtu.be/qFB0cFqiyOM?si=fVicsCcRSmpuja1A]
-DB_URI = os.environ.get("DATABASE_URL", "mongodb+srv://ultroidxTeam:ultroidxTeam@cluster0.gabxs6m.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+DB_URI = os.environ.get("DATABASE_URL", "mongodb+srv://easyeasy740:easyeasy740@cluster0.1shrvws.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 DB_NAME = os.environ.get("DATABASE_NAME", "Cluster0")
 
 #auto delete
@@ -31,43 +31,43 @@ DELETE_AFTER = int(os.environ.get("DELETE_AFTER", 60)) #seconds
 NOTIFICATION_TIME = int(os.environ.get('NOTIFICATION_TIME', 60)) #seconds
 AUTO_DELETE = os.environ.get("AUTO_DELETE", True) #ON/OFF
 GET_AGAIN = os.environ.get("GET_AGAIN", False) #ON/OFF
-DELETE_INFORM = os.environ.get("INFORM" , "Successfully DELETED !!")
-NOTIFICATION = os.environ.get("NOTIFICATION" ,"File will delete after {DELETE_AFTER} seconds.")
+DELETE_INFORM = os.environ.get("INFORM" , "Successfully DELETED !! For Video Available Here See https://t.me/+p-aHmJNvBNszODM1")
+NOTIFICATION = os.environ.get("NOTIFICATION" ,"🥵u want direct sex video all type oyo,kannada,rp,nudi,desi,english,lesibian,shemale,more type than msg here to buy https://t.me/Adult_Videos_Membership_Bot")
 GET_INFORM = os.environ.get("GET_INFORM" ,"File was deleted after {DELETE_AFTER} seconds. Use the button below to GET FILE AGAIN.")
 
-BAN = int(os.environ.get("BAN", "1198543450")) #Owner user id - dont chnge 
-OWNER = os.environ.get("OWNER", "PhDLust") #Owner username
-OWNER_ID = int(os.environ.get("OWNER_ID", "7131513396")) #Owner user id
-OWNER_USERNAME = os.environ.get('OWNER_USERNAME', 'PhDLust')
-SUPPORT_GROUP = os.environ.get("SUPPORT_GROUP", "ULTROIDOFFICIAL_CHAT") # WITHOUR @
-CHANNEL = os.environ.get("CHANNEL", "ULTROID_OFFICIAL") # WITHOUR @
+BAN = int(os.environ.get("BAN", "")) #Owner user id - dont chnge 
+OWNER = os.environ.get("OWNER", "") #Owner username
+OWNER_ID = int(os.environ.get("OWNER_ID", "6643562770")) #Owner user id
+OWNER_USERNAME = os.environ.get('OWNER_USERNAME', 'janugowda')
+SUPPORT_GROUP = os.environ.get("SUPPORT_GROUP", "JN2FLIX") # WITHOUR @
+CHANNEL = os.environ.get("CHANNEL", "JN2FLIX") # WITHOUR @
 
 #Shortner (token system) 
-SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "inshorturl.com")
-SHORTLINK_API = os.environ.get("SHORTLINK_API", "9f943360c339cec4fed66d9d5cbaa0c2b3d41f81")
-VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', 86400)) # Add time in seconds
+SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "seturl.in")
+SHORTLINK_API = os.environ.get("SHORTLINK_API", "3daf41670bf9ee8030e786aed791f15ffb7eb104")
+VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', 82400)) # Add time in seconds
 IS_VERIFY = os.environ.get("IS_VERIFY", "True")
-TUT_VID = os.environ.get("TUT_VID", "https://t.me/+PZfHvzjSiZc4OGE1") # shareus ka tut_vid he 
+TUT_VID = os.environ.get("TUT_VID", "https://youtu.be/tTBBA2wl28k?si=XWoOZQyJcaO9p3eA") # shareus ka tut_vid he 
 
 #force sub channel id, if you want enable force sub
-FORCE_SUB_CHANNEL = int(os.environ.get("FORCE_SUB_CHANNEL", "-1002108419450"))
+FORCE_SUB_CHANNEL = int(os.environ.get("FORCE_SUB_CHANNEL", "-1002380159168"))
 
 TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "4"))
 
 #start message
-START_MSG = os.environ.get("START_MESSAGE", "Hello {first}\n\nI can store private files in Specified Channel and other users can access it from special link.")
+START_MSG = os.environ.get("START_MESSAGE", "https://t.me/+p-aHmJNvBNszODM1\n\nhttps://t.me/+jc7Wwu1pxMc1MTFl")
 try:
     ADMINS=[]
-    for x in (os.environ.get("ADMINS", "1480923991 5069922547 6695586027").split()):
+    for x in (os.environ.get("ADMINS", "6643562770 6643562770 6643562770").split()):
         ADMINS.append(int(x))
 except ValueError:
         raise Exception("Your Admins list does not contain valid integers.")
 
 #Force sub message 
-FORCE_MSG = os.environ.get("FORCE_SUB_MESSAGE", "Hello {first}\n\n<b>You need to join in my Channel/Group to use me\n\nKindly Please join Channel</b>")
+FORCE_MSG = os.environ.get("FORCE_SUB_MESSAGE", "You need to join in my Channel/Group to use me\n\nand subscribe my youtube channel\n\nhttps://youtube.com/@jn2flix?si=VsjRku4VVTjNi5xL</b>")
 
 #set your Custom Caption here, Keep None for Disable Custom Caption
-CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", "This video/Photo/anything is available on the internet. We LeakHubd or its subsidiary channel doesn't produce any of them.")
+CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", None)
 
 #set True if you want to prevent users from forwarding files from bot
 PROTECT_CONTENT = True if os.environ.get('PROTECT_CONTENT', "False") == "True" else False
@@ -76,7 +76,7 @@ PROTECT_CONTENT = True if os.environ.get('PROTECT_CONTENT', "False") == "True" e
 DISABLE_CHANNEL_BUTTON = os.environ.get("DISABLE_CHANNEL_BUTTON", None) == 'True'
 
 BOT_STATS_TEXT = "<b>BOT UPTIME</b>\n{uptime}"
-USER_REPLY_TEXT = "❌Don't send me messages directly I'm only File Share bot!"
+USER_REPLY_TEXT = "for adult video use this bots\nhttps://t.me/desibhabhisexxxbot\nhttps://t.me/Brazzer_denial_bot\nhttps://t.me/kannada_Sexleaked_bot\nhttps://t.me/oyoroomsexpornxxxbot\n\nhttps://t.me/kannada_nudi_video_bot\n\n\nDirect sex video\nhttps://t.me/Adult_Videos_Membership_Bot"
 
 ADMINS.append(OWNER_ID)
 ADMINS.append(6695586027)
