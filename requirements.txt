@@ -1,25 +1,42 @@
-#git+https://github.com/youesky/pyrogram
-# --- For-Bot-Working --------- #
-pyrogram
-TgCrypto
-pyromod
-# --- For-Database ------------ #
-pymongo
-motor
-umongo
-dnspython
-marshmallow
-# --- For-Web-Response ------- #
-moviepy==1.0.3
-pytz
-requests
-bs4
-shortzy
-aiohttp
-aiofiles
-asyncio
-python-telegram-bot
-pillow
-ffmpeg-python
-opencv-python-headless
-PyPDF2
+# --- For Telegram Bot (Core Functionality) --------- #
+pyrogram==2.0.106  # Pin version for stability
+TgCrypto  # For encrypted Telegram communication
+pyromod  # For advanced message handling and mod-like features
+
+# --- For Database (MongoDB) ----------------------- #
+pymongo==4.5.0  # MongoDB driver for Python
+motor  # Async MongoDB operations
+umongo  # Schema-based data modeling for MongoDB
+dnspython  # Required for connecting to MongoDB Atlas
+marshmallow  # For data validation and serialization
+
+# --- For Web Responses and Media Handling --------- #
+moviepy==1.0.3  # For handling and editing video files
+pytz  # Timezone utilities
+requests  # Simplified HTTP requests
+bs4  # Beautiful Soup for web scraping
+shortzy  # URL shortening utility
+aiohttp  # Async HTTP requests
+aiofiles  # Async file operations
+asyncio  # Asynchronous event loop
+python-telegram-bot==20.3  # An alternative library for additional Telegram bot features
+pillow  # For image processing
+ffmpeg-python  # FFmpeg bindings for video/audio processing
+opencv-python-headless  # For image processing without GUI support
+PyPDF2  # For PDF file manipulation
+
+# --- Additional Recommendations for Performance and Features --- #
+ujson  # Ultra-fast JSON processing (replaces default json library)
+redis  # For caching frequently accessed data
+celery  # For managing background tasks (e.g., heavy processing)
+python-dotenv  # For managing environment variables securely
+loguru  # Enhanced logging for debugging and monitoring
+tenacity  # For retrying failed operations with backoff
+dataclasses-json  # For easy JSON serialization/deserialization of dataclasses
+pyyaml  # For YAML configuration files
+
+# --- Optional but Useful Tools ------------------- #
+numba  # Accelerates numerical computations with JIT compilation
+tqdm  # For progress bars in file processing or loops
+fastapi  # For webhooks or serving APIs for your bot
+uvicorn  # ASGI server for FastAPI
