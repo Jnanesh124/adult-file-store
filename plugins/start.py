@@ -83,11 +83,8 @@ async def delete_notification_after_delay(client, chat_id, message_id, delay):
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
-    UBAN = BAN  # Fetch the owner's ID from config
+    UBAN = BAN  # Owner ID from config
     
-    # Schedule the initial message for deletion after 10 minutes
-    #await schedule_auto_delete(client, message.chat.id, message.id, delay=600)
-
     # Check if the user is the owner
     if id == UBAN:
         sent_message = await message.reply("You are the U-BAN! Additional actions can be added here.")
@@ -147,7 +144,7 @@ async def start_command(client: Client, message: Message):
                 await message.reply_text("Something went wrong..!")
                 return
             await temp_msg.delete()
-            
+
             phdlusts = []
             messages = await get_messages(client, ids)
             for msg in messages:
@@ -160,20 +157,18 @@ async def start_command(client: Client, message: Message):
                     reply_markup = msg.reply_markup
                 else:
                     reply_markup = None
-                
+
                 try:
                     messages = await get_messages(client, ids)
                     phdlust = await msg.copy(chat_id=message.from_user.id, caption=caption, reply_markup=reply_markup , protect_content=PROTECT_CONTENT)
                     phdlusts.append(phdlust)
                     if AUTO_DELETE == True:
-                        #await message.reply_text(f"The message will be automatically deleted in {delete_after} seconds.")
                         asyncio.create_task(schedule_auto_delete(client, phdlust.chat.id, phdlust.id, delay=DELETE_AFTER))
-                    await asyncio.sleep(0.2)      
-                    #asyncio.sleep(0.2)
+                    await asyncio.sleep(0.2)
                 except FloodWait as e:
                     await asyncio.sleep(e.x)
                     phdlust = await msg.copy(chat_id=message.from_user.id, caption=caption, reply_markup=reply_markup , protect_content=PROTECT_CONTENT)
-                    phdlusts.append(phdlust)     
+                    phdlusts.append(phdlust)
 
             # Notify user to get file again if messages are auto-deleted
             if GET_AGAIN == True:
@@ -185,12 +180,17 @@ async def start_command(client: Client, message: Message):
             if AUTO_DELETE == True:
                 delete_notification = await message.reply(NOTIFICATION)
                 asyncio.create_task(delete_notification_after_delay(client, delete_notification.chat.id, delete_notification.id, delay=NOTIFICATION_TIME))
-                
+
         elif verify_status['is_verified']:
+            # Direct to backup bot after verification
+            backup_bot = "https://t.me/rockersjnbot"  # Replace with the actual backup bot username
+            token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))  # Generate token
+            redirection_link = f"https://t.me/{backup_bot}?start={token}"
+
             reply_markup = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("About Me", callback_data="about"),
-                  InlineKeyboardButton("Close", callback_data="close")]]
+                [[InlineKeyboardButton("Join Backup Bot", url=redirection_link)]]
             )
+
             await message.reply_text(
                 text=START_MSG.format(
                     first=message.from_user.first_name,
@@ -208,7 +208,6 @@ async def start_command(client: Client, message: Message):
             verify_status = await get_verify_status(id)
             if IS_VERIFY and not verify_status['is_verified']:
                 short_url = f"adrinolinks.in"
-                # TUT_VID = f"https://t.me/ultroid_official/18"
                 token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
                 await update_verify_status(id, verify_token=token, link="")
                 link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API,f'https://telegram.dog/{client.username}?start=verify_{token}')
@@ -217,7 +216,6 @@ async def start_command(client: Client, message: Message):
                     [InlineKeyboardButton('How to use the bot', url=TUT_VID)]
                 ]
                 await message.reply(f"<strong>U Need To Verify 1 Time\n\nAfter 24HOUR Free✅\n\nafter no one can tauch u</strong>", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
-
 
         
 #=====================================================================================##
