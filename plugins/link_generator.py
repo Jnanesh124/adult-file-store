@@ -44,7 +44,7 @@ async def batch(client: Client, message: Message):
     # The Backup Bot link with the same start string
     backup_link = f"https://t.me/{BACKUP_BOT_USERNAME}?start={base64_string}"
 
-    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={backup_link}')]]))
+    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={backup_link}')]])
     
     # Send the message with the Backup Bot link
     await second_message.reply_text(f"<strong>🥵 DIRECT VIDEO 📂 👇\n\n{backup_link}\n\n📩 How To Open @How_to_open_link_rockersbot</strong>", 
