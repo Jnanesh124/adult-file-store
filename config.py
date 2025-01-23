@@ -12,6 +12,12 @@ APP_ID = int(os.environ.get("APP_ID", "21942125"))
 #Your API Hash from my.telegram.org
 API_HASH = os.environ.get("API_HASH", "6d412af77ce89f5bb1ed8971589d61b5")
 
+BACKUP_BOTS = [
+    "rockersjnbot",  # Replace with the actual username of the first backup bot
+    "BackupBot2",  # Replace with the actual username of the second backup bot
+    # Add more bots if needed
+]
+
 #Your db channel Id
 CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1002205211966"))
 
