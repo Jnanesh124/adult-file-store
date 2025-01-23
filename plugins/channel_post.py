@@ -5,27 +5,8 @@ from pyrogram.errors import FloodWait
 import os
 
 from bot import Bot
-from config import ADMINS, CHANNEL_ID, DISABLE_CHANNEL_BUTTON, BACKUP_BOTS
+from config import ADMINS, CHANNEL_ID, DISABLE_CHANNEL_BUTTON
 from helper_func import encode
-
-# Function to get the active bot
-def get_active_bot(main_bot_username, backup_bots):
-    """
-    Returns the currently active bot username.
-    - Tries the main bot first.
-    - Fallback to backup bots in order if the main bot is unavailable.
-    """
-    # List of all bots to check
-    bots = [main_bot_username] + backup_bots
-
-    # Logic to find the first active bot (you can replace this with a more robust check if needed)
-    for bot in bots:
-        # Assuming we have a function to check if the bot is active
-        # If bot is active, return it (you'll need to implement the check)
-        return bot  # For simplicity, returning the first one in the list
-
-    # If no bots are active, return None
-    return None
 
 @Bot.on_message(filters.private & filters.user(ADMINS) & ~filters.command(['start', 'users', 'broadcast', 'batch', 'genlink', 'stats']))
 async def channel_post(client: Client, message: Message):
@@ -57,14 +38,7 @@ async def channel_post(client: Client, message: Message):
             converted_id = post_message.id * abs(client.db_channel.id)
             string = f"get-{converted_id}"
             base64_string = await encode(string)
-
-            # Get the active bot to create the link
-            active_bot = get_active_bot(client.username, BACKUP_BOTS)
-            if not active_bot:
-                await reply_text.edit_text("No active bots available. Please try again later.")
-                return
-
-            link = f"https://t.me/{active_bot}?start={base64_string}"
+            link = f"https://t.me/{client.username}?start={base64_string}"
 
             # Prepare the caption with the link
             caption = f"<strong>🥵 DIRECT VIDEO 📂 👇\n\n{link}\n\n📩 How To Open @How_to_open_link_rockersbot</strong>"
@@ -90,14 +64,7 @@ async def channel_post(client: Client, message: Message):
             converted_id = post_message.id * abs(client.db_channel.id)
             string = f"get-{converted_id}"
             base64_string = await encode(string)
-
-            # Get the active bot to create the link
-            active_bot = get_active_bot(client.username, BACKUP_BOTS)
-            if not active_bot:
-                await reply_text.edit_text("No active bots available. Please try again later.")
-                return
-
-            link = f"https://t.me/{active_bot}?start={base64_string}"
+            link = f"https://t.me/{client.username}?start={base64_string}"
 
             # Prepare the caption with the link
             caption = f"<strong>🥵 DIRECT VIDEO 📂 👇\n\n{link}\n\n📩 How To Open @How_to_open_link_rockersbot</strong>"
@@ -130,6 +97,7 @@ async def channel_post(client: Client, message: Message):
     except Exception as e:
         print(e)
         await reply_text.edit_text("Something went Wrong..!")
+        return
 
 @Bot.on_message(filters.channel & filters.incoming & filters.chat(CHANNEL_ID))
 async def new_post(client: Client, message: Message):
@@ -139,13 +107,7 @@ async def new_post(client: Client, message: Message):
     converted_id = message.id * abs(client.db_channel.id)
     string = f"get-{converted_id}"
     base64_string = await encode(string)
-
-    # Get the active bot to create the link
-    active_bot = get_active_bot(client.username, BACKUP_BOTS)
-    if not active_bot:
-        return  # Exit if no active bot is found
-
-    link = f"https://t.me/{active_bot}?start={base64_string}"
+    link = f"https://t.me/{client.username}?start={base64_string}"
 
     reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]])
 
