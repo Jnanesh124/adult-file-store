@@ -49,8 +49,8 @@ SUPPORT_GROUP = os.environ.get("SUPPORT_GROUP", "JN2FLIX") # WITHOUR @
 CHANNEL = os.environ.get("CHANNEL", "JN2FLIX") # WITHOUR @
 
 #Shortner (token system) 
-SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "seturl.in")
-SHORTLINK_API = os.environ.get("SHORTLINK_API", "3daf41670bf9ee8030e786aed791f15ffb7eb104")
+SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "teraboxlinks.com")
+SHORTLINK_API = os.environ.get("SHORTLINK_API", "6a77d7544d9317a1002a7645ca03de54223f75f1")
 VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', 82400)) # Add time in seconds
 IS_VERIFY = os.environ.get("IS_VERIFY", "True")
 TUT_VID = os.environ.get("TUT_VID", "https://youtu.be/tTBBA2wl28k?si=XWoOZQyJcaO9p3eA") # shareus ka tut_vid he 
