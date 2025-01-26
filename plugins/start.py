@@ -188,9 +188,10 @@ async def start_command(client: Client, message: Message):
             redirection_link = f"https://t.me/+hvHXgDbcQ70zMWZl"
 
             reply_markup = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("Join adult backup", url=redirection_link)]
-                ],[InlineKeyboardButton("Join adult channel", url=f"https://t.me/+97Novmh1JAo4ZTQ1")]
-            )
+            [
+            [InlineKeyboardButton("Join adult backup", url=redirection_link)],
+            [InlineKeyboardButton("Join adult channel", url="https://t.me/+97Novmh1JAo4ZTQ1")]
+            ])
 
             await message.reply_text(
                 text=START_MSG.format(
