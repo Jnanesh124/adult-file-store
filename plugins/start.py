@@ -183,12 +183,13 @@ async def start_command(client: Client, message: Message):
 
         elif verify_status['is_verified']:
             # Direct to backup bot after verification
-            backup_bot = "https://t.me/rockersjnbot"  # Replace with the actual backup bot username
+            backup_bot = "JN2FLIX"  # Replace with the actual backup bot username
             token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))  # Generate token
-            redirection_link = f"https://t.me/{backup_bot}?start={token}"
+            redirection_link = f"https://t.me/+hvHXgDbcQ70zMWZl"
 
             reply_markup = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("Join Backup Bot", url=redirection_link)]]
+                [[InlineKeyboardButton("Join adult backup", url=redirection_link)]
+                ],[InlineKeyboardButton("Join adult channel", url=f"https://t.me/+97Novmh1JAo4ZTQ1")]
             )
 
             await message.reply_text(
