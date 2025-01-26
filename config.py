@@ -3,14 +3,14 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 #Bot token @Botfather
-TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "6833068556:AAHJ77POZ0T5FQLiu2jP4y0lZwQIeN-9_C0")
+TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "68330jP4y0lZwQIeN-9_C0")
 
 #Your API ID & API HASH from my.telegram.org [https://youtu.be/gZQJ-yTMkEo?si=H4NlUUgjsIc5btzH]
 #Your API ID from my.telegram.org
-APP_ID = int(os.environ.get("APP_ID", "21942125"))
+APP_ID = int(os.environ.get("APP_ID", "21125"))
 
 #Your API Hash from my.telegram.org
-API_HASH = os.environ.get("API_HASH", "6d412af77ce89f5bb1ed8971589d61b5")
+API_HASH = os.environ.get("API_HASH", "6d412589d61b5")
 
 BACKUP_BOTS = [
     "rockersjnbot",  # Replace with the actual username of the first backup bot
@@ -22,14 +22,14 @@ BACKUP_BOTS = [
 CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1002205211966"))
 
 #OWNER ID
-OWNER_ID = int(os.environ.get("OWNER_ID", "6643562770"))
+OWNER_ID = int(os.environ.get("OWNER_ID", "662770"))
 
 #Port
 PORT = os.environ.get("PORT", "8585")
 
 #Database 
 #Database [https://youtu.be/qFB0cFqiyOM?si=fVicsCcRSmpuja1A]
-DB_URI = os.environ.get("DATABASE_URL", "mongodb+srv://easyeasy740:easyeasy740@cluster0.1shrvws.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+DB_URI = os.environ.get("DATABASE_URL", "mongodvws.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 DB_NAME = os.environ.get("DATABASE_NAME", "Cluster0")
 
 #auto delete
