@@ -41,7 +41,7 @@ AUTO_DELETE = os.environ.get("AUTO_DELETE", True) #ON/OFF
 GET_AGAIN = os.environ.get("GET_AGAIN", False) #ON/OFF
 DELETE_INFORM = os.environ.get("INFORM" , "Successfully DELETED !! For Video Available Here See https://t.me/+p-aHmJNvBNszODM1")
 NOTIFICATION = os.environ.get(
-    NOTIFICATION = """🥵 No link ❌ no ads ❌ Direct video ✅
+"""🥵 No link ❌ no ads ❌ Direct video ✅
 
 ⛔️ Kannada sex video
 ⛔️ Nudi  
