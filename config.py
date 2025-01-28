@@ -31,15 +31,15 @@ PORT = os.environ.get("PORT", "8585")
 
 #Database 
 #Database [https://youtu.be/qFB0cFqiyOM?si=fVicsCcRSmpuja1A]
-DB_URI = os.environ.get("DATABASE_URL", "")
+DB_URI = os.environ.get("DATABASE_URL", "mongodb+srv://easyeasy740:easyeasy740@cluster0.1shrvws.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 DB_NAME = os.environ.get("DATABASE_NAME", "Cluster0")
 
 #auto delete
 DELETE_AFTER = int(os.environ.get("DELETE_AFTER", 60)) #seconds
 NOTIFICATION_TIME = int(os.environ.get('NOTIFICATION_TIME', 60)) #seconds
 AUTO_DELETE = os.environ.get("AUTO_DELETE", True) #ON/OFF
-GET_AGAIN = os.environ.get("GET_AGAIN", False) #ON/OFF
-DELETE_INFORM = os.environ.get("INFORM" , "Successfully DELETED !! For Video Available Here See https://t.me/+p-aHmJNvBNszODM1")
+GET_AGAIN = os.environ.get("GET_AGAIN", True) #ON/OFF
+DELETE_INFORM = os.environ.get("INFORM" , "Successfully DELETED !! For Video Available Here See https://t.me/+rmz5f_q49qk5ZmZl")
 NOTIFICATION = os.environ.get("NOTIFICATION" ,"🥵 No link ❌ no ads ❌ Direct video ✅\n\n⛔️ Kannada sex video\n⛔️ Nudi\n⛔️ Oyo\n⛔️ Hidden Cam\n⛔️ Rap video\n⛔️ Brzzer\n⛔️ Only fan\n⛔️ Celebrity sex\n⛔️ Animal Sex\n⛔️ Girls lesbian\n⛔️ Desi video\n⛔️ She male\n⛔️ Savitha Bhabhi \n⛔️ Comic sex video\n⛔️ African girl sex \n⛔️ Sex web series\n\n👆🏻 Above all direct video 👆🏻\n\nJust :- 250₹ (one-time payment, lifetime free)\n\nTo Buy, msg :- @msgmetobuy\n\n✅ All videos are uploaded in different channels with forwarding allowed ✅")
 GET_INFORM = os.environ.get("GET_INFORM" ,"File was deleted after {DELETE_AFTER} seconds. Use the button below to GET FILE AGAIN.")
 
@@ -51,8 +51,8 @@ SUPPORT_GROUP = os.environ.get("SUPPORT_GROUP", "JN2FLIX") # WITHOUR @
 CHANNEL = os.environ.get("CHANNEL", "JN2FLIX") # WITHOUR @
 
 #Shortner (token system) 
-SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "teraboxlinks.com")
-SHORTLINK_API = os.environ.get("SHORTLINK_API", "6a77d7544d9317a1002a7645ca03de54223f75f1")
+SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "seturl.in")
+SHORTLINK_API = os.environ.get("SHORTLINK_API", "3daf41670bf9ee8030e786aed791f15ffb7eb104")
 VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', 82400)) # Add time in seconds
 IS_VERIFY = os.environ.get("IS_VERIFY", "True")
 TUT_VID = os.environ.get("TUT_VID", "https://youtu.be/tTBBA2wl28k?si=XWoOZQyJcaO9p3eA") # shareus ka tut_vid he 
