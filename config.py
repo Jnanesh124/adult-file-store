@@ -21,6 +21,9 @@ BACKUP_BOTS = [
 #Your db channel Id
 CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1002205211966"))
 
+ Define the chunk size for file uploads/downloads
+CHUNK_SIZE_MB = 500  # Example: 500MB
+
 #OWNER ID
 OWNER_ID = int(os.environ.get("OWNER_ID", "662770"))
 
