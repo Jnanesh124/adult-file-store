@@ -7,125 +7,112 @@ import os
 from bot import Bot
 from config import ADMINS, CHANNEL_ID, DISABLE_CHANNEL_BUTTON
 from helper_func import encode
-from pymongo import MongoClient
 
-# MongoDB setup (assuming you have a MongoDB client setup for the bot)
-client_db = MongoClient('mongodb://localhost:27017/')
-db = client_db["movie_db"]
-movies_collection = db["movies"]
-
-# Indexing related functions
-async def index_file(message, client):
-    thumbnail_path = None
+@Bot.on_message(filters.private & filters.user(ADMINS) & ~filters.command(['start', 'users', 'broadcast', 'batch', 'genlink', 'stats']))
+async def channel_post(client: Client, message: Message):
+    reply_text = await message.reply_text("Please Wait...!", quote=True)
     try:
-        # Check for video, document, or animation (media files)
+        thumbnail_path = None  # Initialize thumbnail_path for cleanup
+        post_message = None
+
+        # Check if the message contains a video with a thumbnail
         if message.video and message.video.thumbs:
             thumbnail = message.video.thumbs[0].file_id
             thumbnail_path = await client.download_media(thumbnail)
+
+        # Check if the message contains a document with a thumbnail
         elif message.document and message.document.thumbs:
             thumbnail = message.document.thumbs[0].file_id
             thumbnail_path = await client.download_media(thumbnail)
+
+        # Check if the message contains a GIF with a thumbnail
         elif message.animation and message.animation.thumbs:
             thumbnail = message.animation.thumbs[0].file_id
             thumbnail_path = await client.download_media(thumbnail)
-        
-        # Generate the link for the media
-        converted_id = message.id * abs(client.db_channel.id)
-        string = f"get-{converted_id}"
-        base64_string = await encode(string)
-        link = f"https://t.me/{client.username}?start={base64_string}"
 
-        # Save media details to the MongoDB database
-        movie_data = {
-            "file_id": message.id,
-            "file_name": message.caption or message.text,
-            "file_link": link,
-            "type": "video" if message.video else "document" if message.document else "animation",
-        }
+        # If there's no thumbnail, proceed with the usual link generation
+        if not thumbnail_path:
+            post_message = await message.copy(chat_id=client.db_channel.id, disable_notification=True)
 
-        # Insert movie data into MongoDB
-        movies_collection.update_one({"file_id": message.id}, {"$set": movie_data}, upsert=True)
+            # Generate the link
+            converted_id = post_message.id * abs(client.db_channel.id)
+            string = f"get-{converted_id}"
+            base64_string = await encode(string)
+            link = f"https://t.me/{client.username}?start={base64_string}"
 
-        # Send reply with link and share button
-        caption = f"<strong>🥵 DIRECT VIDEO 📂 👇\n\n{link}</strong>"
-        await message.reply_text(caption, reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]]
-        ))
+            # Prepare the caption with the link
+            caption = f"<strong>🥵 DIRECT VIDEO 📂 👇\n\n{link}</strong>"
 
-        # Clean up
+            # Send the link without a thumbnail (if no media)
+            await message.reply_text(caption, reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]]
+            ))
+
+            # Delete the original media message if it was a media message (not just a text)
+            if message.video or message.document or message.animation:
+                await message.delete()
+
+            # Remove the "Please Wait..." message after processing
+            await reply_text.delete()
+            return  # Exit here to prevent further processing
+
+        # If a thumbnail is available, send the thumbnail and link
         if thumbnail_path:
-            os.remove(thumbnail_path)
+            post_message = await message.copy(chat_id=client.db_channel.id, disable_notification=True)
 
-    except Exception as e:
-        print(f"Error in indexing file: {e}")
+            # Generate the link
+            converted_id = post_message.id * abs(client.db_channel.id)
+            string = f"get-{converted_id}"
+            base64_string = await encode(string)
+            link = f"https://t.me/{client.username}?start={base64_string}"
 
-# Index Command (/index)
-@Bot.on_message(filters.private & filters.command('index') & filters.user(ADMINS))
-async def index_files(bot, message: Message):
-    reply_text = await message.reply_text("Fetching and indexing files. Please wait...")
+            # Prepare the caption with the link
+            caption = f"<strong>🥵 DIRECT VIDEO 📂 👇\n\n{link}</strong>"
 
-    try:
-        # Fetch all files from the channel for indexing
-        async for msg in bot.get_chat_history(CHANNEL_ID):
-            # Check if it's a media message and index it
-            if msg.video or msg.document or msg.animation:
-                await index_file(msg, bot)
+            # Send the thumbnail with the link in the caption
+            await message.reply_photo(photo=thumbnail_path, caption=caption, reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]]
+            ))
+            os.remove(thumbnail_path)  # Clean up the downloaded thumbnail
 
-        await reply_text.edit_text("Indexing completed! All files are now indexed.")
-    except Exception as e:
-        print(f"Error during indexing: {e}")
-        await reply_text.edit_text("An error occurred while indexing the files.")
+            # Delete the original media message if it was a media message (not just a text)
+            if message.video or message.document or message.animation:
+                await message.delete()
 
-# Movie Search Command (/search)
-@Bot.on_message(filters.private & filters.command('search'))
-async def search_movie(bot, message: Message):
-    movie_name = ' '.join(message.command[1:]).lower().strip()
-    if not movie_name:
-        return await message.reply("Please provide a movie name to search.")
+        # Remove the "Please Wait..." message after processing
+        await reply_text.delete()
 
-    # Search in the database
-    movie_data = list(movies_collection.find({"file_name": {"$regex": movie_name, "$options": "i"}}))
-    if not movie_data:
-        return await message.reply("No results found for this movie.")
+        if not DISABLE_CHANNEL_BUTTON:
+            try:
+                await post_message.edit_reply_markup(InlineKeyboardMarkup(
+                    [[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]]
+                ))
+            except FloodWait as e:
+                await asyncio.sleep(e.value)
+            except Exception:
+                pass
 
-    # Prepare the buttons with movie links
-    buttons = []
-    for movie in movie_data:
-        link = movie['file_link']
-        buttons.append([InlineKeyboardButton(movie['file_name'], url=link)])
-
-    # Send search results as inline buttons
-    await message.reply_text("Here are the movie links:", reply_markup=InlineKeyboardMarkup(buttons))
-
-# Show Total Files Command (/file)
-@Bot.on_message(filters.private & filters.command('file') & filters.user(ADMINS))
-async def show_total_files(bot, message: Message):
-    total_files = movies_collection.count_documents({})
-    await message.reply(f"Total indexed files: {total_files}")
-
-# Automatically Index New Files (Live Indexing)
-@Bot.on_message(filters.channel & filters.incoming & filters.chat(CHANNEL_ID))
-async def new_post(bot, message: Message):
-    if DISABLE_CHANNEL_BUTTON:
-        return
-
-    # Index each new post (for live indexing)
-    if message.video or message.document or message.animation:
-        await index_file(message, bot)
-
-    # Prepare the link for the new post
-    converted_id = message.id * abs(bot.db_channel.id)
-    string = f"get-{converted_id}"
-    base64_string = await encode(string)
-    link = f"https://t.me/{bot.username}?start={base64_string}"
-
-    # Edit the message reply markup to include share buttons
-    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]])
-
-    try:
-        if message.chat:  # Ensure message.chat is not None before accessing
-            await message.edit_reply_markup(reply_markup)
     except FloodWait as e:
         await asyncio.sleep(e.value)
     except Exception as e:
-        print(f"Error editing message reply markup: {e}")
+        print(e)
+        await reply_text.edit_text("Something went Wrong..!")
+        return
+
+@Bot.on_message(filters.channel & filters.incoming & filters.chat(CHANNEL_ID))
+async def new_post(client: Client, message: Message):
+    if DISABLE_CHANNEL_BUTTON:
+        return
+
+    converted_id = message.id * abs(client.db_channel.id)
+    string = f"get-{converted_id}"
+    base64_string = await encode(string)
+    link = f"https://t.me/{client.username}?start={base64_string}"
+    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]])
+
+    try:
+        await message.edit_reply_markup(reply_markup)
+    except FloodWait as e:
+        await asyncio.sleep(e.value)
+    except Exception:
+        pass
