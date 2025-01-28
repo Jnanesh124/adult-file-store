@@ -22,12 +22,12 @@ from shortzy import Shortzy
 
 # List of image URLs for random selection
 IMAGE_URLS = [
-    "https://i.imghippo.com/files/YFL9451r.jpg",
-    "https://i.imghippo.com/files/upP7352aXU.jpg",
-    "https://i.imghippo.com/files/FocL9600iu.jpg",
-    "https://i.imghippo.com/files/nrBS3075oA.jpg",
-    "https://i.imghippo.com/files/BOJ7577aHE.jpg",
-    "https://i.imghippo.com/files/xWEe4873Cq.jpg"
+    "https://ibb.co/q955RkS",
+    "https://ibb.co/kXpp0Pf",
+    "https://ibb.co/5x9kD2h",
+    "https://ibb.co/C7jQbSM",
+    "https://ibb.co/9H9wb4H",
+    "https://ibb.co/wztrs0m"
 ]
 
 client = MongoClient(DB_URI)  # Replace with your MongoDB URI
