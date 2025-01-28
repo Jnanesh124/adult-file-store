@@ -84,7 +84,7 @@ async def search_movie(bot, message: Message):
         return await message.reply("Please provide a movie name to search.")
 
     # Search in the database
-    movie_data = movies_collection.find({"file_name": {"$regex": movie_name, "$options": "i"}})
+    movie_data = list(movies_collection.find({"file_name": {"$regex": movie_name, "$options": "i"}}))
     if not movie_data:
         return await message.reply("No results found for this movie.")
 
@@ -123,8 +123,9 @@ async def new_post(bot, message: Message):
     reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]])
 
     try:
-        await message.edit_reply_markup(reply_markup)
+        if message.chat:  # Ensure message.chat is not None before accessing
+            await message.edit_reply_markup(reply_markup)
     except FloodWait as e:
         await asyncio.sleep(e.value)
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"Error editing message reply markup: {e}")
