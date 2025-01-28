@@ -37,6 +37,8 @@ async def handle_mega_link(client: Client, message: Message):
         "current_step": "Initializing"
     }
 
+    chunk_dir = None  # Initialize chunk_dir to None in case of early exit
+
     try:
         mega_client = mega.login()
         mega_file = mega_client.get_public_url_info(link)
@@ -92,7 +94,7 @@ async def handle_mega_link(client: Client, message: Message):
         collection.update_one({"link": link}, {"$set": progress})
         await reply_text.edit_text("An error occurred while processing the Mega link.")
     finally:
-        if os.path.exists(chunk_dir):
+        if chunk_dir and os.path.exists(chunk_dir):
             shutil.rmtree(chunk_dir)
 
 
