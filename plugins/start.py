@@ -20,6 +20,16 @@ from helper_func import subscribed, encode, decode, get_messages, get_shortlink,
 from database.database import add_user, del_user, full_userbase, present_user
 from shortzy import Shortzy
 
+# List of image URLs for random selection
+IMAGE_URLS = [
+    "https://i.imghippo.com/files/YFL9451r.jpg",
+    "https://i.imghippo.com/files/upP7352aXU.jpg",
+    "https://i.imghippo.com/files/FocL9600iu.jpg",
+    "https://i.imghippo.com/files/nrBS3075oA.jpg",
+    "https://i.imghippo.com/files/BOJ7577aHE.jpg",
+    "https://i.imghippo.com/files/xWEe4873Cq.jpg"
+]
+
 client = MongoClient(DB_URI)  # Replace with your MongoDB URI
 db = client[DB_NAME]  # Database name
 phdlust = db["phdlust"]  # Collection for users
@@ -107,15 +117,21 @@ async def start_command(client: Client, message: Message):
             # Update verification status
             await update_verify_status(id, is_verified=True, verified_time=time.time())
             
-            # Success message and "GET FILE AGAIN" button
+            # Success message with random image
+            random_image = random.choice(IMAGE_URLS)
             success_text = (
                 "✅ Your token has been successfully verified and is valid for 24 hours.\n\n"
-                "Click the button below if you need to get the file again."
             )
             get_file_markup = InlineKeyboardMarkup([
-                [InlineKeyboardButton("GET FILE AGAIN", url=f"https://t.me/{client.username}?start={message.text.split()[1]}")]
+                [InlineKeyboardButton("JOIN ADULT UPDATE CHANNEL", url=f"https://t.me/+-uJZnBO06H8xZTY1")]
             ])
-            await message.reply(success_text, reply_markup=get_file_markup, protect_content=False, quote=True)
+            await client.send_photo(
+                chat_id=message.chat.id,
+                photo=random_image,
+                caption=success_text,
+                reply_markup=get_file_markup,
+                protect_content=False
+            )
 
         elif len(message.text) > 7 and verify_status['is_verified']:
             try:
@@ -210,17 +226,23 @@ async def start_command(client: Client, message: Message):
                 token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
                 await update_verify_status(id, verify_token=token, link="")
                 link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API, f'https://telegram.dog/{client.username}?start=verify_{token}')
+                random_image = random.choice(IMAGE_URLS)
                 btn = [
-                    [InlineKeyboardButton("Click here", url=link)],
-                    [InlineKeyboardButton('How to use the bot', url=TUT_VID)]
+                    [InlineKeyboardButton("Verify Here", url=link)],
+                    [InlineKeyboardButton("Tutorial Video", url=TUT_VID)]
                 ]
-                await message.reply(
-                    f"Your Ads token is expired, refresh your token and try again.\n\n"
+                verify_text = (
+                    "❗️ You need to verify your token to proceed.\n\n"
                     f"Token Timeout: {get_exp_time(VERIFY_EXPIRE)}\n\n"
-                    f"What is the token?\n\nThis is an ads token. If you pass 1 ad, you can use the bot for 24 hours after passing the ad.",
+                    "What is the token?\n\n"
+                    "This is an ads token. Complete 1 ad to use the bot for 24 hours."
+                )
+                await client.send_photo(
+                    chat_id=message.chat.id,
+                    photo=random_image,
+                    caption=verify_text,
                     reply_markup=InlineKeyboardMarkup(btn),
-                    protect_content=False,
-                    quote=True
+                    protect_content=False
                 )
 
         
