@@ -145,10 +145,15 @@ async def update_progress(reply_text, progress):
     uploaded_chunks = len(progress.get("uploaded_chunks", []))
     current_step = progress.get("current_step", "Initializing...")
 
-    await reply_text.edit_text(
+    new_text = (
         f"**Progress Update:**\n"
         f"- Total Size: {total_gb:.2f} GB\n"
         f"- Downloaded: {downloaded_mb:.2f} MB\n"
         f"- Uploaded Chunks: {uploaded_chunks}\n"
         f"- Current Step: {current_step}"
     )
+
+    # Check if the new text is different from the current text
+    if reply_text.text != new_text:
+        await reply_text.edit_text(new_text)
+
