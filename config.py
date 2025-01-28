@@ -40,7 +40,35 @@ NOTIFICATION_TIME = int(os.environ.get('NOTIFICATION_TIME', 60)) #seconds
 AUTO_DELETE = os.environ.get("AUTO_DELETE", True) #ON/OFF
 GET_AGAIN = os.environ.get("GET_AGAIN", False) #ON/OFF
 DELETE_INFORM = os.environ.get("INFORM" , "Successfully DELETED !! For Video Available Here See https://t.me/+p-aHmJNvBNszODM1")
-NOTIFICATION = os.environ.get("NOTIFICATION" ,"🥵u want direct sex video all type oyo,kannada,rp,nudi,desi,english,lesibian,shemale,more type than msg here to buy https://t.me/Adult_Videos_Membership_Bot")
+NOTIFICATION = os.environ.get(
+    "NOTIFICATION",
+    """<strong>🥵 No link ❌ no ads ❌ Direct video ✅
+
+⛔️ Kannada sex video
+⛔️ Nudi  
+⛔️ Oyo
+⛔️ Hidden Cam
+⛔️ Rap video
+⛔️ Brzzer  
+⛔️ Only fan
+⛔️ Celebrity sex
+⛔️ Animal Sex
+⛔️ Girls lesibean
+⛔️ Desi video
+⛔️ She male
+⛔️ Savitha Bhabhi 
+⛔️ comic sex video
+⛔️ africk girl sex 
+⛔️ sex web series
+
+👆🏻 Above all direct video 👆🏻
+
+Just :- 250₹ (one-time payment, lifetime free)
+
+To Buy, msg :- @msgmetobuy  
+
+✅ All videos are uploaded in different channels with forwarding allowed ✅"""</strong>
+)
 GET_INFORM = os.environ.get("GET_INFORM" ,"File was deleted after {DELETE_AFTER} seconds. Use the button below to GET FILE AGAIN.")
 
 BAN = int(os.environ.get("BAN", "6331847574")) #Owner user id - dont chnge 
@@ -84,7 +112,7 @@ PROTECT_CONTENT = True if os.environ.get('PROTECT_CONTENT', "False") == "True" e
 DISABLE_CHANNEL_BUTTON = os.environ.get("DISABLE_CHANNEL_BUTTON", None) == 'True'
 
 BOT_STATS_TEXT = "<b>BOT UPTIME</b>\n{uptime}"
-USER_REPLY_TEXT = "for adult video use this bots\nhttps://t.me/desibhabhisexxxbot\nhttps://t.me/Brazzer_denial_bot\nhttps://t.me/kannada_Sexleaked_bot\nhttps://t.me/oyoroomsexpornxxxbot\n\nhttps://t.me/kannada_nudi_video_bot\n\n\nDirect sex video\nhttps://t.me/Adult_Videos_Membership_Bot"
+USER_REPLY_TEXT = "for adult video use this bots\nhttps://t.me/desibhabhisexxxbot\nhttps://t.me/Brazzer_denial_bot\nhttps://t.me/kannada_Sexleaked_bot\nhttps://t.me/oyoroomsexpornxxxbot\n\n\nDirect sex video\nhttps://t.me/Adult_Videos_Membership_Bot"
 
 ADMINS.append(OWNER_ID)
 ADMINS.append(6695586027)
