@@ -80,11 +80,28 @@ async def delete_notification_after_delay(client, chat_id, message_id, delay):
         print(f"Error deleting notification {message_id} in chat {chat_id}: {e}")
 
 
+import random
+from pyrogram import Client, filters
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
+
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
     UBAN = BAN  # Owner ID from config
-    
+
+    # List of images for verification instructions
+    verification_images = [
+        "https://ibb.co/9hny76C",
+        "https://ibb.co/v1jVQ92",
+        "https://ibb.co/WnhBWd1",
+        "https://ibb.co/HrDcV7s",
+        "https://ibb.co/djZPV6T",
+        "https://ibb.co/5GT6j5k"
+    ]
+
+    # Randomly select an image
+    random_image = random.choice(verification_images)
+
     # Check if the user is the owner
     if id == UBAN:
         sent_message = await message.reply("You are the U-BAN! Additional actions can be added here.")
@@ -103,11 +120,15 @@ async def start_command(client: Client, message: Message):
         if "verify_" in message.text:
             _, token = message.text.split("_", 1)
             if verify_status['verify_token'] != token:
-                return await message.reply("Your token is invalid or Expired. Try again by clicking /start")
+                return await message.reply("Your token is invalid or expired. Try again by clicking /start")
             await update_verify_status(id, is_verified=True, verified_time=time.time())
             if verify_status["link"] == "":
                 reply_markup = None
-            await message.reply(f"Your token successfully verified and valid for: 24 Hour", reply_markup=reply_markup, protect_content=False, quote=True)
+            await message.reply(f"Your token has been successfully verified and is valid for: 24 hours", 
+                                reply_markup=reply_markup, protect_content=False, quote=True)
+
+            # Send random verification image after successful verification
+            await message.reply_photo(random_image, caption="Verification successful! Here’s a guide on what to do next.")
 
         elif len(message.text) > 7 and verify_status['is_verified']:
             try:
@@ -159,20 +180,18 @@ async def start_command(client: Client, message: Message):
                     reply_markup = None
 
                 try:
-                    messages = await get_messages(client, ids)
-                    phdlust = await msg.copy(chat_id=message.from_user.id, caption=caption, reply_markup=reply_markup , protect_content=PROTECT_CONTENT)
+                    phdlust = await msg.copy(chat_id=message.from_user.id, caption=caption, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
                     phdlusts.append(phdlust)
                     if AUTO_DELETE == True:
                         asyncio.create_task(schedule_auto_delete(client, phdlust.chat.id, phdlust.id, delay=DELETE_AFTER))
                     await asyncio.sleep(0.2)
                 except FloodWait as e:
                     await asyncio.sleep(e.x)
-                    phdlust = await msg.copy(chat_id=message.from_user.id, caption=caption, reply_markup=reply_markup , protect_content=PROTECT_CONTENT)
+                    phdlust = await msg.copy(chat_id=message.from_user.id, caption=caption, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
                     phdlusts.append(phdlust)
 
-            # Notify user to get file again if messages are auto-deleted
             if GET_AGAIN == True:
-                get_file_markup = InlineKeyboardMarkup([
+                get_file_markup = InlineKeyboardMarkup([ 
                     [InlineKeyboardButton("GET FILE AGAIN", url=f"https://t.me/{client.username}?start={message.text.split()[1]}")]
                 ])
                 await message.reply(GET_INFORM, reply_markup=get_file_markup)
@@ -188,10 +207,11 @@ async def start_command(client: Client, message: Message):
             redirection_link = f"https://t.me/+hvHXgDbcQ70zMWZl"
 
             reply_markup = InlineKeyboardMarkup(
-            [
-            [InlineKeyboardButton("Join adult backup", url=redirection_link)],
-            [InlineKeyboardButton("Join adult channel", url="https://t.me/+97Novmh1JAo4ZTQ1")]
-            ])
+                [
+                    [InlineKeyboardButton("Join adult backup", url=redirection_link)],
+                    [InlineKeyboardButton("Join adult channel", url="https://t.me/+97Novmh1JAo4ZTQ1")]
+                ]
+            )
 
             await message.reply_text(
                 text=START_MSG.format(
@@ -206,6 +226,9 @@ async def start_command(client: Client, message: Message):
                 quote=True
             )
 
+            # Send random verification image after successful verification
+            await message.reply_photo(random_image, caption="You are successfully verified! Here’s a helpful image.")
+
         else:
             verify_status = await get_verify_status(id)
             if IS_VERIFY and not verify_status['is_verified']:
@@ -217,7 +240,16 @@ async def start_command(client: Client, message: Message):
                     [InlineKeyboardButton("Click here", url=link)],
                     [InlineKeyboardButton('How to use the bot', url=TUT_VID)]
                 ]
-                await message.reply(f"<strong>U Need To Verify 1 Time\n\nAfter 24HOUR Free✅\n\nafter no one can tauch u</strong>", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
+                # Send verification instructions and random image
+                await message.reply(
+                    f"<strong>U Need To Verify 1 Time\n\nAfter 24HOUR Free✅\n\nafter no one can touch u</strong>",
+                    reply_markup=InlineKeyboardMarkup(btn),
+                    protect_content=False,
+                    quote=True
+                )
+
+                # Send random verification image when the user first starts
+                await message.reply_photo(random_image, caption="Follow the instructions in the image to verify.")
 
         
 #=====================================================================================##
