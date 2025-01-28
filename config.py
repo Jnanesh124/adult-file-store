@@ -41,8 +41,7 @@ AUTO_DELETE = os.environ.get("AUTO_DELETE", True) #ON/OFF
 GET_AGAIN = os.environ.get("GET_AGAIN", False) #ON/OFF
 DELETE_INFORM = os.environ.get("INFORM" , "Successfully DELETED !! For Video Available Here See https://t.me/+p-aHmJNvBNszODM1")
 NOTIFICATION = os.environ.get(
-    "NOTIFICATION",
-    """<strong>🥵 No link ❌ no ads ❌ Direct video ✅
+    NOTIFICATION = """🥵 No link ❌ no ads ❌ Direct video ✅
 
 ⛔️ Kannada sex video
 ⛔️ Nudi  
@@ -53,22 +52,21 @@ NOTIFICATION = os.environ.get(
 ⛔️ Only fan
 ⛔️ Celebrity sex
 ⛔️ Animal Sex
-⛔️ Girls lesibean
+⛔️ Girls lesbian
 ⛔️ Desi video
 ⛔️ She male
 ⛔️ Savitha Bhabhi 
-⛔️ comic sex video
-⛔️ africk girl sex 
-⛔️ sex web series
+⛔️ Comic sex video
+⛔️ African girl sex 
+⛔️ Sex web series
 
 👆🏻 Above all direct video 👆🏻
 
 Just :- 250₹ (one-time payment, lifetime free)
 
-To Buy, msg :- @msgmetobuy  
+To Buy, msg :- @msgmetobuy  
 
-✅ All videos are uploaded in different channels with forwarding allowed ✅"""</strong>
-)
+✅ All videos are uploaded in different channels with forwarding allowed ✅""")
 GET_INFORM = os.environ.get("GET_INFORM" ,"File was deleted after {DELETE_AFTER} seconds. Use the button below to GET FILE AGAIN.")
 
 BAN = int(os.environ.get("BAN", "6331847574")) #Owner user id - dont chnge 
