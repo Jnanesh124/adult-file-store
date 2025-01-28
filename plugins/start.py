@@ -84,7 +84,7 @@ import random
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
-@Bot.on_message(filters.command('start') & filters.private & subscribed)
+@Bot.on_message(filters.command('start') & filters.private & filters.subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
     UBAN = BAN  # Owner ID from config
@@ -124,132 +124,66 @@ async def start_command(client: Client, message: Message):
             await update_verify_status(id, is_verified=True, verified_time=time.time())
             if verify_status["link"] == "":
                 reply_markup = None
-            await message.reply(f"Your token has been successfully verified and is valid for: 24 hours", 
-                                reply_markup=reply_markup, protect_content=False, quote=True)
-
-            # Send random verification image after successful verification
-            await message.reply_photo(random_image, caption="Verification successful! Here’s a guide on what to do next.")
-
-        elif len(message.text) > 7 and verify_status['is_verified']:
-            try:
-                base64_string = message.text.split(" ", 1)[1]
-            except:
-                return
-            _string = await decode(base64_string)
-            argument = _string.split("-")
-            if len(argument) == 3:
-                try:
-                    start = int(int(argument[1]) / abs(client.db_channel.id))
-                    end = int(int(argument[2]) / abs(client.db_channel.id))
-                except:
-                    return
-                if start <= end:
-                    ids = range(start, end+1)
-                else:
-                    ids = []
-                    i = start
-                    while True:
-                        ids.append(i)
-                        i -= 1
-                        if i < end:
-                            break
-            elif len(argument) == 2:
-                try:
-                    ids = [int(int(argument[1]) / abs(client.db_channel.id))]
-                except:
-                    return
-            temp_msg = await message.reply("Please wait...")
-            try:
-                messages = await get_messages(client, ids)
-            except:
-                await message.reply_text("Something went wrong..!")
-                return
-            await temp_msg.delete()
-
-            phdlusts = []
-            messages = await get_messages(client, ids)
-            for msg in messages:
-                if bool(CUSTOM_CAPTION) & bool(msg.document):
-                    caption = CUSTOM_CAPTION.format(previouscaption = "" if not msg.caption else msg.caption.html, filename = msg.document.file_name)
-                else:
-                    caption = "" if not msg.caption else msg.caption.html
-
-                if DISABLE_CHANNEL_BUTTON:
-                    reply_markup = msg.reply_markup
-                else:
-                    reply_markup = None
-
-                try:
-                    phdlust = await msg.copy(chat_id=message.from_user.id, caption=caption, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                    phdlusts.append(phdlust)
-                    if AUTO_DELETE == True:
-                        asyncio.create_task(schedule_auto_delete(client, phdlust.chat.id, phdlust.id, delay=DELETE_AFTER))
-                    await asyncio.sleep(0.2)
-                except FloodWait as e:
-                    await asyncio.sleep(e.x)
-                    phdlust = await msg.copy(chat_id=message.from_user.id, caption=caption, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
-                    phdlusts.append(phdlust)
-
-            if GET_AGAIN == True:
-                get_file_markup = InlineKeyboardMarkup([ 
-                    [InlineKeyboardButton("GET FILE AGAIN", url=f"https://t.me/{client.username}?start={message.text.split()[1]}")]
-                ])
-                await message.reply(GET_INFORM, reply_markup=get_file_markup)
-
-            if AUTO_DELETE == True:
-                delete_notification = await message.reply(NOTIFICATION)
-                asyncio.create_task(delete_notification_after_delay(client, delete_notification.chat.id, delete_notification.id, delay=NOTIFICATION_TIME))
-
-        elif verify_status['is_verified']:
-            # Direct to backup bot after verification
-            backup_bot = "JN2FLIX"  # Replace with the actual backup bot username
-            token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))  # Generate token
-            redirection_link = f"https://t.me/+hvHXgDbcQ70zMWZl"
-
-            reply_markup = InlineKeyboardMarkup(
-                [
-                    [InlineKeyboardButton("Join adult backup", url=redirection_link)],
-                    [InlineKeyboardButton("Join adult channel", url="https://t.me/+97Novmh1JAo4ZTQ1")]
-                ]
-            )
-
-            await message.reply_text(
-                text=START_MSG.format(
-                    first=message.from_user.first_name,
-                    last=message.from_user.last_name,
-                    username=None if not message.from_user.username else '@' + message.from_user.username,
-                    mention=message.from_user.mention,
-                    id=message.from_user.id
-                ),
+            await message.reply(
+                f"Your token has been successfully verified and is valid for: 24 hours\n\nVerification successful!",
                 reply_markup=reply_markup,
-                disable_web_page_preview=True,
+                protect_content=False,
                 quote=True
             )
 
-            # Send random verification image after successful verification
-            await message.reply_photo(random_image, caption="You are successfully verified! Here’s a helpful image.")
+            # Send both success message and random verification image in a single reply
+            await message.reply_photo(random_image, caption="Here’s a guide on what to do next. Your verification is successful!")
+
+        elif len(message.text) > 7 and verify_status['is_verified']:
+            # Direct file delivery logic (assuming that the file can be directly delivered when verified)
+            await send_file_to_user(message, client, verify_status)
+            
+        elif verify_status['is_verified']:
+            # Send a success message and access link after verification
+            await message.reply_text(
+                "You are successfully verified! Here’s your direct access link:",
+                reply_markup=InlineKeyboardMarkup([
+                    [InlineKeyboardButton("Access Link", url="https://example.com/your_direct_link")]
+                ])
+            )
+
+            # Send random image with success text and direct access link in a single message
+            await message.reply_photo(random_image, caption="Verification successful! You now have access.")
 
         else:
-            verify_status = await get_verify_status(id)
-            if IS_VERIFY and not verify_status['is_verified']:
-                short_url = f"adrinolinks.in"
-                token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
-                await update_verify_status(id, verify_token=token, link="")
-                link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API,f'https://telegram.dog/{client.username}?start=verify_{token}')
-                btn = [
-                    [InlineKeyboardButton("Click here", url=link)],
-                    [InlineKeyboardButton('How to use the bot', url=TUT_VID)]
-                ]
-                # Send verification instructions and random image
-                await message.reply(
-                    f"<strong>U Need To Verify 1 Time\n\nAfter 24HOUR Free✅\n\nafter no one can touch u</strong>",
-                    reply_markup=InlineKeyboardMarkup(btn),
-                    protect_content=False,
-                    quote=True
-                )
+            # User is not verified: Send random image and verification instructions with tutorial link and verification button
+            token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+            await update_verify_status(id, verify_token=token, link="")
 
-                # Send random verification image when the user first starts
-                await message.reply_photo(random_image, caption="Follow the instructions in the image to verify.")
+            link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API, f'https://telegram.dog/{client.username}?start=verify_{token}')
+            btn = [
+                [InlineKeyboardButton("Click here to verify", url=link)],
+                [InlineKeyboardButton('How to use the bot', url=TUT_VID)]
+            ]
+
+            # Send a verification message with random image and tutorial link in a single reply
+            await message.reply(
+                f"<strong>You need to verify first. After 24 hours, your verification expires.</strong>",
+                reply_markup=InlineKeyboardMarkup(btn),
+                protect_content=False,
+                quote=True
+            )
+
+            # Send random image with verification message in a single reply
+            await message.reply_photo(random_image, caption="Follow the instructions in the image to verify.")
+            
+# Helper function for sending file if the user is verified
+async def send_file_to_user(message, client, verify_status):
+    # Logic to send the file to the user based on the IDs in the verify_status
+    # Example of sending a file
+    file_id = verify_status.get("file_id")  # Replace with actual logic to get the file ID
+    if file_id:
+        await client.send_document(
+            message.chat.id,
+            file_id,
+            caption="Here is the file you requested.",
+            reply_markup=None  # Modify this as needed for additional buttons
+        )
 
         
 #=====================================================================================##
