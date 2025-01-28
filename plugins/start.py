@@ -1,4 +1,4 @@
-from pymongo import MongoClient
+# https://www.youtube.com/channel/UC7tAa4hho37iNv731_6RIOg
 import asyncio
 import base64
 import logging
@@ -7,88 +7,74 @@ import random
 import re
 import string
 import time
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
 from pyrogram import Client, filters, __version__
 from pyrogram.enums import ParseMode
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
-from datetime import datetime, timedelta
+
 from bot import Bot
-from config import *
+from config import (
+    ADMINS,
+    FORCE_MSG,
+    START_MSG,
+    CUSTOM_CAPTION,
+    IS_VERIFY,
+    VERIFY_EXPIRE,
+    SHORTLINK_API,
+    SHORTLINK_URL,
+    DISABLE_CHANNEL_BUTTON,
+    PROTECT_CONTENT,
+    TUT_VID,
+    OWNER_ID,
+)
 from helper_func import subscribed, encode, decode, get_messages, get_shortlink, get_verify_status, update_verify_status, get_exp_time
 from database.database import add_user, del_user, full_userbase, present_user
 from shortzy import Shortzy
 
-client = MongoClient(DB_URI)  # Replace with your MongoDB URI
-db = client[DB_NAME]  # Database name
-phdlust = db["phdlust"]  # Collection for users
-phdlust_tasks = db["phdlust_tasks"] 
+# List of predefined random image URLs or file IDs
+RANDOM_IMAGES = [
+    'https://i.imghippo.com/files/xWEe4873Cq.jpg',
+    'https://i.imghippo.com/files/BOJ7577aHE.jpg',
+    'https://i.imghippo.com/files/nrBS3075oA.jpg'
+    'https://i.imghippo.com/files/FocL9600iu.jpg',
+    'https://i.imghippo.com/files/upP7352aXU.jpg',
+    'https://i.imghippo.com/files/YFL9451r.jpg'
+]
 
-# Logging configuration
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+async def get_verification_count(user_id):
+    user_data = await db.verify_status.find_one({'user_id': user_id}, {'verification_count': 1, '_id': 0})
+    if user_data and 'verification_count' in user_data:
+        return user_data['verification_count']
+    return 0
 
-# Function to add a delete task to the database
-async def add_delete_task(chat_id, message_id, delete_at):
-    phdlust_tasks.insert_one({
-        "chat_id": chat_id,
-        "message_id": message_id,
-        "delete_at": delete_at
-    })
+@Bot.on_message(filters.command('verify_count') & filters.private)
+async def verify_count_command(client: Bot, message: Message):
+    user_id = message.from_user.id
+    verify_status = await db_verify_status(user_id)
+    verify_count = verify_status.get('verify_count', 0)  # Ensure 'verify_count' is managed
+    await message.reply(f"You have verified your token {verify_count} times.", quote=True)
 
-# Function to delete the notification after a set delay
-async def delete_notification(client, chat_id, notification_id, delay):
-    await asyncio.sleep(delay)
-    try:
-        # Delete the notification message
-        await client.delete_messages(chat_id=chat_id, message_ids=notification_id)
-    except Exception as e:
-        print(f"Error deleting notification {notification_id} in chat {chat_id}: {e}")
-        
-async def schedule_auto_delete(client, chat_id, message_id, delay):
-    delete_at = datetime.now() + timedelta(seconds=int(delay))
-    await add_delete_task(chat_id, message_id, delete_at)
-    
-    # Run deletion in the background to prevent blocking
-    async def delete_message():
-        await asyncio.sleep(int(delay))
-        try:
-            # Delete the original message
-            await client.delete_messages(chat_id=chat_id, message_ids=message_id)
-            phdlust_tasks.delete_one({"chat_id": chat_id, "message_id": message_id})  # Remove from DB
-            # Send a notification about the deletion
-            notification_text = DELETE_INFORM
-            notification_msg = await client.send_message(chat_id, notification_text)
-            
-            # Schedule deletion of the notification after 60 seconds
-            asyncio.create_task(delete_notification(client, chat_id, notification_msg.id, 40))
-        except Exception as e:
-            print(f"Error deleting message {message_id} in chat {chat_id}: {e}")
 
-    asyncio.create_task(delete_message())  
+@Bot.on_message(filters.command('verify_stats') & filters.private & filters.user(ADMINS))
+async def verify_stats_command(client: Bot, message: Message):
+    verified_users_count = await count_verified_users()
+    await message.reply(
+        f"Total number of users who have verified their tokens: {verified_users_count}",
+        quote=True
+    )
 
-# Start command handler
-@Bot.on_message(filters.command('start') & filters.private)
+
+@Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
-    UBAN = BAN  # Owner ID from config
-
-    # List of images for verification instructions
-    verification_images = [
-        "https://ibb.co/9hny76C",
-        "https://ibb.co/v1jVQ92",
-        "https://ibb.co/WnhBWd1",
-        "https://ibb.co/HrDcV7s",
-        "https://ibb.co/djZPV6T",
-        "https://ibb.co/5GT6j5k"
-    ]
-
-    # Randomly select an image
-    random_image = random.choice(verification_images)
+    owner_id = ADMINS  # Fetch the owner's ID from config
 
     # Check if the user is the owner
-    if id == UBAN:
-        sent_message = await message.reply("You are the U-BAN! Additional actions can be added here.")
+    if id == owner_id:
+        # Owner-specific actions
+        await message.reply("You are the owner! Additional actions can be added here.")
+
     else:
         if not await present_user(id):
             try:
@@ -104,105 +90,123 @@ async def start_command(client: Client, message: Message):
             _, token = message.text.split("_", 1)
             if verify_status['verify_token'] != token:
                 return await message.reply("Your token is invalid or expired. Try again by clicking /start")
+
             await update_verify_status(id, is_verified=True, verified_time=time.time())
-            if verify_status["link"] == "":
-                reply_markup = None
+            # Select a random image from the predefined list
+            random_image = random.choice(RANDOM_IMAGES)
+            
+            reply_markup = None
             await message.reply(
-                f"Your token has been successfully verified and is valid for: 24 hours\n\nVerification successful!",
+                f"Your token was successfully verified and is valid for 24 hours.",
                 reply_markup=reply_markup,
+                parse_mode=ParseMode.HTML,
                 protect_content=False,
                 quote=True
             )
-
-            # Send both success message and random verification image in a single reply
-            await message.reply_photo(random_image, caption="Here’s a guide on what to do next. Your verification is successful!")
+            
+            # Send random image after verification success
+            await message.reply_photo(random_image, caption="Verification successful! Here's a random image for you.", quote=True)
 
         elif len(message.text) > 7 and verify_status['is_verified']:
-            # Direct file delivery logic (assuming that the file can be directly delivered when verified)
-            await send_file_to_user(message, client, verify_status)
-            
+            # Process base64 and other functionalities here...
+            pass
+
         elif verify_status['is_verified']:
-            # Send a success message and access link after verification
-            await message.reply_text(
-                "You are successfully verified! Here’s your direct access link:",
-                reply_markup=InlineKeyboardMarkup([[
-                    InlineKeyboardButton("Access Link", url="https://example.com/your_direct_link")
-                ]])
+            reply_markup = InlineKeyboardMarkup(
+                [[InlineKeyboardButton("About Me", callback_data="about"),
+                  InlineKeyboardButton("Close", callback_data="close")]]
             )
-
-            # Send random image with success text and direct access link in a single message
-            await message.reply_photo(random_image, caption="Verification successful! You now have access.")
-        
-        else:
-            # User is not verified: Send random image and verification instructions with tutorial link and verification button
-            token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
-            await update_verify_status(id, verify_token=token, link="")
-
-            link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API, f'https://telegram.dog/{client.username}?start=verify_{token}')
-            btn = [
-                [InlineKeyboardButton("Click here to verify", url=link)],
-                [InlineKeyboardButton('How to use the bot', url="https://www.youtube.com/channel/UC7tAa4hho37iNv731_6RIOg")]
-            ]
-
-            # Send a verification message with random image and tutorial link in a single reply
-            await message.reply(
-                f"<strong>You need to verify first. After 24 hours, your verification expires.</strong>",
-                reply_markup=InlineKeyboardMarkup(btn),
-                protect_content=False,
+            # Send message with details
+            await message.reply_text(
+                text=START_MSG.format(
+                    first=message.from_user.first_name,
+                    last=message.from_user.last_name,
+                    username=None if not message.from_user.username else '@' + message.from_user.username,
+                    mention=message.from_user.mention,
+                    id=message.from_user.id
+                ),
+                reply_markup=reply_markup,
+                disable_web_page_preview=True,
                 quote=True
             )
 
-            # Send random image with verification message in a single reply
-            await message.reply_photo(random_image, caption="Follow the instructions in the image to verify.")
+        else:
+            verify_status = await get_verify_status(id)
+            if IS_VERIFY and not verify_status['is_verified']:
+                token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+                await update_verify_status(id, verify_token=token, link="")
+                link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API, f'https://telegram.dog/{client.username}?start=verify_{token}')
+                
+                btn = [
+                    [InlineKeyboardButton("Click here", url=link)],
+                    [InlineKeyboardButton('How to use the bot', url=TUT_VID)]
+                ]
+                # Send verification instructions with random image
+                random_image = random.choice(RANDOM_IMAGES)
+                await message.reply(
+                    f"Your Ads token is expired. Refresh your token and try again.\n\nToken Timeout: {get_exp_time(VERIFY_EXPIRE)}\n\n"
+                    f"What is the token?\n\nThis is an ads token. If you pass 1 ad, you can use the bot for 24 hours after passing the ad.",
+                    reply_markup=InlineKeyboardMarkup(btn),
+                    protect_content=False,
+                    quote=True
+                )
+                # Send random image with verification instructions
+                await message.reply_photo(random_image, caption="Here's a random image for you while verifying.", quote=True)
 
-# Helper function for sending file if the user is verified
-async def send_file_to_user(message, client, verify_status):
-    # Logic to send the file to the user based on the IDs in the verify_status
-    # Example of sending a file
-    file_id = verify_status.get("file_id")  # Replace with actual logic to get the file ID
-    if file_id:
-        await client.send_document(
-            message.chat.id,
-            file_id,
-            caption="Here is the file you requested.",
-            reply_markup=None  # Modify this as needed for additional buttons
-        )
 
-# User not joined handler
+    
+        
+#=====================================================================================##
+
+WAIT_MSG = """"<b>Processing ...</b>"""
+
+REPLY_ERROR = """<code>Use this command as a replay to any telegram message with out any spaces.</code>"""
+
+#=====================================================================================##
+
+    
+    
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
     buttons = [
-        [InlineKeyboardButton(
-            "Join Channel", url=f"https://t.me/+0S0i5fWcJUZjODJl"),
-         InlineKeyboardButton(
-            "Join Channel", url=client.invitelink)],
-        [InlineKeyboardButton(
-            "Join Channel", url=f"https://t.me/+jc7Wwu1pxMc1MTFl"),
-         InlineKeyboardButton(
-            "Join Channel", url=f"https://t.me/+cw0DyuLqmdk1NTE1")]
+        [
+            InlineKeyboardButton(
+                "Join Channel",
+                url = client.invitelink)
+        ]
     ]
     try:
-        buttons.append([InlineKeyboardButton(
-            text='Try Again',
-            url=f"https://t.me/{client.username}?start={message.command[1]}")])
+        buttons.append(
+            [
+                InlineKeyboardButton(
+                    text = 'Try Again',
+                    url = f"https://t.me/{client.username}?start={message.command[1]}"
+                )
+            ]
+        )
     except IndexError:
         pass
 
     await message.reply(
-        text=FORCE_MSG.format(
-            first=message.from_user.first_name,
-            last=message.from_user.last_name,
-            username=None if not message.from_user.username else '@' + message.from_user.username,
-            mention=message.from_user.mention,
-            id=message.from_user.id
-        ),
-        reply_markup=InlineKeyboardMarkup(buttons),
-        quote=True,
-        disable_web_page_preview=True
+        text = FORCE_MSG.format(
+                first = message.from_user.first_name,
+                last = message.from_user.last_name,
+                username = None if not message.from_user.username else '@' + message.from_user.username,
+                mention = message.from_user.mention,
+                id = message.from_user.id
+            ),
+        reply_markup = InlineKeyboardMarkup(buttons),
+        quote = True,
+        disable_web_page_preview = True
     )
 
-# Broadcast message handler for admins
-@Bot.on_message(filters.command('broadcast') & filters.private & filters.user(ADMINS))
+@Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
+async def get_users(client: Bot, message: Message):
+    msg = await client.send_message(chat_id=message.chat.id, text=WAIT_MSG)
+    users = await full_userbase()
+    await msg.edit(f"{len(users)} users are using this bot")
+
+@Bot.on_message(filters.private & filters.command('broadcast') & filters.user(ADMINS))
 async def send_text(client: Bot, message: Message):
     if message.reply_to_message:
         query = await full_userbase()
@@ -228,19 +232,22 @@ async def send_text(client: Bot, message: Message):
             except InputUserDeactivated:
                 await del_user(chat_id)
                 deleted += 1
-            except Exception as e:
+            except:
                 unsuccessful += 1
                 pass
+            total += 1
+        
+        status = f"""<b><u>Broadcast Completed</u>
 
-        await pls_wait.delete()
+Total Users: <code>{total}</code>
+Successful: <code>{successful}</code>
+Blocked Users: <code>{blocked}</code>
+Deleted Accounts: <code>{deleted}</code>
+Unsuccessful: <code>{unsuccessful}</code></b>"""
+        
+        return await pls_wait.edit(status)
 
-        return await message.reply(
-            text=SEND_BROADCAST.format(
-                total=total,
-                successful=successful,
-                blocked=blocked,
-                deleted=deleted,
-                unsuccessful=unsuccessful
-            )
-        )
-
+    else:
+        msg = await message.reply(REPLY_ERROR)
+        await asyncio.sleep(8)
+        await msg.delete()
