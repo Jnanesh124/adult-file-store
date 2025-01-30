@@ -57,7 +57,13 @@ async def search_in_file_channel(movie_name):
     """
     async with file_client:
         try:
+            # Debugging: Print the movie name
+            print(f"🔍 Searching for: {movie_name}")
+
             async for msg in file_client.search_messages(chat_id=FILE_CHANNEL_ID, query=movie_name):
+                # Debugging: Print the message details
+                print(f"Found message: {msg.text}")
+
                 # Generate the direct file link
                 converted_id = msg.id * abs(FILE_CHANNEL_ID)
                 string = f"get-{converted_id}"
