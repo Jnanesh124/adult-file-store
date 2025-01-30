@@ -22,12 +22,16 @@ from shortzy import Shortzy
 
 # List of image URLs for random selection
 IMAGE_URLS = [
-    "https://ibb.co/q955RkS",
-    "https://ibb.co/kXpp0Pf",
-    "https://ibb.co/5x9kD2h",
-    "https://ibb.co/C7jQbSM",
-    "https://ibb.co/9H9wb4H",
-    "https://ibb.co/wztrs0m"
+    "https://i.imghippo.com/files/MEOa6092GM.jpg",
+    "https://i.imghippo.com/files/NNg2642qFs.jpg",
+    "https://i.imghippo.com/files/sADS9200vFU.jpg"
+]
+
+# List of image URLs for random selection
+IMAGEX_URLS = [
+    "https://i.imghippo.com/files/LHhl9343EHA.jpg",
+    "https://i.imghippo.com/files/wbMI1192QEE.jpg",
+    "https://i.imghippo.com/files/VdU6324nI.jpg"
 ]
 
 client = MongoClient(DB_URI)  # Replace with your MongoDB URI
@@ -118,7 +122,7 @@ async def start_command(client: Client, message: Message):
             await update_verify_status(id, is_verified=True, verified_time=time.time())
             
             # Success message with random image
-            random_image = random.choice(IMAGE_URLS)
+            random_image = random.choice(IMAGEX_URLS)
             success_text = (
                 "✅ Your token has been successfully verified and is valid for 24 hours.\n\n"
             )
