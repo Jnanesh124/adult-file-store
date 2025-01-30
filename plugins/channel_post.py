@@ -1,4 +1,3 @@
-import asyncio
 import difflib
 import re
 from pyrogram import Client, filters
@@ -7,6 +6,7 @@ from pyrogram.errors import FloodWait, UserNotParticipant, RPCError
 from bot import Bot  # Bot instance
 from config import ADMINS  # Admins
 from helper_func import encode  # Encoding for file links
+import asyncio
 
 # Auto-delete message duration
 AUTO_DELETE_DURATION = 60  
@@ -163,5 +163,11 @@ async def new_post(client: Client, message):
     except Exception:
         pass
 
-# Run auto-join check on startup
-asyncio.run(check_and_join_channel())
+# Run auto-join check on startup within the async context
+async def startup():
+    await check_and_join_channel()
+
+# Create the bot instance and run the startup process
+if __name__ == "__main__":
+    bot = Bot("my_bot")
+    bot.run(startup())  # Pass startup function to ensure auto-join happens
