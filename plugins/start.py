@@ -22,16 +22,16 @@ from shortzy import Shortzy
 
 # List of image URLs for random selection
 IMAGE_URLS = [
-    "https://i.imghippo.com/files/MEOa6092GM.jpg",
-    "https://i.imghippo.com/files/NNg2642qFs.jpg",
-    "https://i.imghippo.com/files/sADS9200vFU.jpg"
+    "https://i.imghippo.com/files/BQx2300LAc.jpg",
+    "https://i.imghippo.com/files/BQx2300LAc.jpg",
+    "https://i.imghippo.com/files/BQx2300LAc.jpg"
 ]
 
 # List of image URLs for random selection
 IMAGEX_URLS = [
-    "https://i.imghippo.com/files/LHhl9343EHA.jpg",
-    "https://i.imghippo.com/files/wbMI1192QEE.jpg",
-    "https://i.imghippo.com/files/VdU6324nI.jpg"
+    "https://i.imghippo.com/files/xlj2728M.jpg",
+    "https://i.imghippo.com/files/xlj2728M.jpg",
+    "https://i.imghippo.com/files/xlj2728M.jpg"
 ]
 
 client = MongoClient(DB_URI)  # Replace with your MongoDB URI
@@ -236,10 +236,10 @@ async def start_command(client: Client, message: Message):
                     [InlineKeyboardButton("Tutorial Video", url=TUT_VID)]
                 ]
                 verify_text = (
-                    "❗️ You need to verify your token to proceed.\n\n"
+                    "<strong>❗️ You need to verify your token to proceed.\n\n"
                     f"Token Timeout: {get_exp_time(VERIFY_EXPIRE)}\n\n"
                     "What is the token?\n\n"
-                    "This is an ads token. Complete 1 ad to use the bot for 24 hours."
+                    "This is an ads token. Complete 1 ad to use the bot for 24 hours.</strong>"
                 )
                 await client.send_photo(
                     chat_id=message.chat.id,
