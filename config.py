@@ -40,7 +40,7 @@ NOTIFICATION_TIME = int(os.environ.get('NOTIFICATION_TIME', 60)) #seconds
 AUTO_DELETE = os.environ.get("AUTO_DELETE", True) #ON/OFF
 GET_AGAIN = os.environ.get("GET_AGAIN", False) #ON/OFF
 DELETE_INFORM = os.environ.get("INFORM" , "Successfully DELETED !! For Video Available Here See https://t.me/+rmz5f_q49qk5ZmZl")
-NOTIFICATION = os.environ.get("NOTIFICATION" ,"🥵 No link ❌ no ads ❌ Direct video ✅\n\n⛔️ Kannada sex video\n⛔️ Nudi\n⛔️ Oyo\n⛔️ Hidden Cam\n⛔️ Rap video\n⛔️ Brzzer\n⛔️ Only fan\n⛔️ Celebrity sex\n⛔️ Animal Sex\n⛔️ Girls lesbian\n⛔️ Desi video\n⛔️ She male\n⛔️ Savitha Bhabhi \n⛔️ Comic sex video\n⛔️ African girl sex \n⛔️ Sex web series\n\n👆🏻 Above all direct video 👆🏻\n\nJust :- 250₹ (one-time payment, lifetime free)\n\nTo Buy, msg :- @msgmetobuy\n\n✅ All videos are uploaded in different channels with forwarding allowed ✅")
+NOTIFICATION = os.environ.get("NOTIFICATION" ,"🥵 No link ❌ no ads ❌ Direct video ✅\n\n⛔️ Kannada sex video\n⛔️ Nudi\n⛔️ Oyo\n⛔️ Hidden Cam\n⛔️ Rap video\n⛔️ Brzzer\n⛔️ Only fan\n⛔️ Celebrity sex\n⛔️ Animal Sex\n⛔️ Girls lesbian\n⛔️ Desi video\n⛔️ She male\n⛔️ Savitha Bhabhi \n⛔️ Comic sex video\n⛔️ African girl sex \n⛔️ Sex web series\n\n👆🏻 Above all direct video 👆🏻\n\nJust :- 250₹ (one-time payment, lifetime free)\n\nTo Buy, msg :- @oldschoolkid2k\n\n✅ All videos are uploaded in different channels with forwarding allowed ✅")
 GET_INFORM = os.environ.get("GET_INFORM" ,"File was deleted after {DELETE_AFTER} seconds. Use the button below to GET FILE AGAIN.")
 
 BAN = int(os.environ.get("BAN", "6331847574")) #Owner user id - dont chnge 
