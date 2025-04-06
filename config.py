@@ -40,15 +40,15 @@ NOTIFICATION_TIME = int(os.environ.get('NOTIFICATION_TIME', 60)) #seconds
 AUTO_DELETE = os.environ.get("AUTO_DELETE", True) #ON/OFF
 GET_AGAIN = os.environ.get("GET_AGAIN", False) #ON/OFF
 DELETE_INFORM = os.environ.get("INFORM" , "Successfully DELETED !! For Video Available Here See https://t.me/+rmz5f_q49qk5ZmZl")
-NOTIFICATION = os.environ.get("NOTIFICATION" ,"🥵 No link ❌ no ads ❌ Direct video ✅\n\n⛔️ Kannada sex video\n⛔️ Nudi\n⛔️ Oyo\n⛔️ Hidden Cam\n⛔️ Rap video\n⛔️ Brzzer\n⛔️ Only fan\n⛔️ Celebrity sex\n⛔️ Animal Sex\n⛔️ Girls lesbian\n⛔️ Desi video\n⛔️ She male\n⛔️ Savitha Bhabhi \n⛔️ Comic sex video\n⛔️ African girl sex \n⛔️ Sex web series\n\n👆🏻 Above all direct video 👆🏻\n\nJust :- 250₹ (one-time payment, lifetime free)\n\nTo Buy, msg :- @oldschoolkid2k\n\n✅ All videos are uploaded in different channels with forwarding allowed ✅")
+NOTIFICATION = os.environ.get("NOTIFICATION" ,"🥵 No link ❌ no ads ❌ Direct video ✅\n\n⛔️ Kannada sex video\n⛔️ Nudi\n⛔️ Oyo\n⛔️ Hidden Cam\n⛔️ Rap video\n⛔️ Brzzer\n⛔️ Only fan\n⛔️ Celebrity sex\n⛔️ Animal Sex\n⛔️ Girls lesbian\n⛔️ Desi video\n⛔️ She male\n⛔️ Savitha Bhabhi \n⛔️ Comic sex video\n⛔️ African girl sex \n⛔️ Sex web series\n\n👆🏻 Above all direct video 👆🏻\n\nJust :- 250₹ (one-time payment, lifetime free)\n\nTo Buy, msg :- @Vipownermsgtobuy\n\n✅ All videos are uploaded in different channels with forwarding allowed ✅")
 GET_INFORM = os.environ.get("GET_INFORM" ,"File was deleted after {DELETE_AFTER} seconds. Use the button below to GET FILE AGAIN.")
 
 BAN = int(os.environ.get("BAN", "6331847574")) #Owner user id - dont chnge 
 OWNER = os.environ.get("OWNER", "erlibedu") #Owner username
-OWNER_ID = int(os.environ.get("OWNER_ID", "6643562770")) #Owner user id
-OWNER_USERNAME = os.environ.get('OWNER_USERNAME', 'janugowda')
-SUPPORT_GROUP = os.environ.get("SUPPORT_GROUP", "JN2FLIX") # WITHOUR @
-CHANNEL = os.environ.get("CHANNEL", "JN2FLIX") # WITHOUR @
+OWNER_ID = int(os.environ.get("OWNER_ID", "7789180334")) #Owner user id
+OWNER_USERNAME = os.environ.get('OWNER_USERNAME', 'Vipownermsgtobuy')
+SUPPORT_GROUP = os.environ.get("SUPPORT_GROUP", "ROCKERSBACKUP") # WITHOUR @
+CHANNEL = os.environ.get("CHANNEL", "ROCKERSBACKUP") # WITHOUR @
 
 #Shortner (token system) 
 SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "seturl.in")
@@ -72,7 +72,7 @@ except ValueError:
         raise Exception("Your Admins list does not contain valid integers.")
 
 #Force sub message 
-FORCE_MSG = os.environ.get("FORCE_SUB_MESSAGE", "You need to join in my Channel/Group to use me\n\nand subscribe my youtube channel\n\nhttps://youtube.com/@jn2flix?si=VsjRku4VVTjNi5xL</b>")
+FORCE_MSG = os.environ.get("FORCE_SUB_MESSAGE", "<b>You need to join in my Channel to use me</b>")
 
 #set your Custom Caption here, Keep None for Disable Custom Caption
 CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", None)
@@ -84,10 +84,10 @@ PROTECT_CONTENT = True if os.environ.get('PROTECT_CONTENT', "False") == "True" e
 DISABLE_CHANNEL_BUTTON = os.environ.get("DISABLE_CHANNEL_BUTTON", None) == 'True'
 
 BOT_STATS_TEXT = "<b>BOT UPTIME</b>\n{uptime}"
-USER_REPLY_TEXT = "for adult video use this bots\nhttps://t.me/desibhabhisexxxbot\nhttps://t.me/Brazzer_denial_bot\nhttps://t.me/kannada_Sexleaked_bot\nhttps://t.me/oyoroomsexpornxxxbot\n\n\nDirect sex video\nhttps://t.me/Adult_Videos_Membership_Bot"
+USER_REPLY_TEXT = "for adult video use this bots\nhttps://t.me/desibhabhisexxxbot\nhttps://t.me/Brazzer_denial_bot\nhttps://t.me/kannada_Sexleaked_bot\nhttps://t.me/oyoroomsexpornxxxbot\n\n\nDirect sex video\n@Vipownermsgtobuy"
 
 ADMINS.append(OWNER_ID)
-ADMINS.append(6695586027)
+ADMINS.append(7789180334)
 
 LOG_FILE_NAME = "filesharingbot.txt"
 
