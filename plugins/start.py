@@ -364,3 +364,21 @@ Unsuccessful: <code>{unsuccessful}</code></b>"""
         msg = await message.reply(REPLY_ERROR)
         await asyncio.sleep(8)
         await msg.delete()
+        
+@Bot.on_message(filters.command("research") & filters.user(ADMINS) & filters.private)
+async def reset_all_tokens(client, message):
+    try:
+        result = phdlust.update_many(
+            {},
+            {
+                "$set": {
+                    "verify_token": "",
+                    "link": "",
+                    "is_verified": False,
+                    "verified_time": 0
+                }
+            }
+        )
+        await message.reply_text(f"✅ Verification tokens reset for {result.modified_count} users.")
+    except Exception as e:
+        await message.reply_text(f"❌ Error while resetting tokens: {e}")
