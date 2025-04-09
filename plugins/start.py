@@ -249,7 +249,16 @@ async def start_command(client: Client, message: Message):
                     protect_content=False
                 )
 
-        
+@Bot.on_message(filters.command("clear") & filters.private)
+async def clear_verify(client, message):
+    user_id = message.from_user.id
+
+    # Clear the verification token
+    await update_verify_status(user_id, verify_token="", link="")
+
+    await message.reply_text("✅ Your verification token has been cleared. You can now re-verify.")
+
+
 #=====================================================================================##
 
 WAIT_MSG = """"<b>Processing ...</b>"""
