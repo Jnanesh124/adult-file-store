@@ -1,4 +1,3 @@
-
 import motor.motor_asyncio
 from config import DB_URI, DB_NAME
 
@@ -9,7 +8,7 @@ user_data = database['users']
 
 default_verify = {
     'is_verified': False,
-    'verified_time': 0,
+    'verified_time': "",  # Changed from 0 to empty string for datetime support
     'verify_token': "",
     'link': ""
 }
@@ -37,7 +36,12 @@ async def add_user(user_id: int):
 async def db_verify_status(user_id):
     user = await user_data.find_one({'_id': user_id})
     if user:
-        return user.get('verify_status', default_verify)
+        status = user.get('verify_status', default_verify)
+        # Ensure all keys are present even if stored data is outdated
+        for key in default_verify:
+            if key not in status:
+                status[key] = default_verify[key]
+        return status
     return default_verify
 
 async def db_update_verify_status(user_id, verify):
