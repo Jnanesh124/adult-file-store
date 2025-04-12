@@ -232,14 +232,14 @@ async def start_command(client: Client, message: Message):
                 link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API, f'https://telegram.dog/{client.username}?start=verify_{token}')
                 random_image = random.choice(IMAGE_URLS)
                 btn = [
-                    [InlineKeyboardButton("Verify Here", url=link)],
-                    [InlineKeyboardButton("Tutorial Video", url=TUT_VID)]
+                    [InlineKeyboardButton("✅ Verify Here ✅", url=link)],
+                    [InlineKeyboardButton("Buy Membership For Direct File 📥", url='https://telegram.dog/Membership_buy_Adult_bot')]
                 ]
                 verify_text = (
-                    "<strong>❗️ You need to verify your token to proceed.\n\n"
+                    "<strong>❗️ You need to verify your token to get video 📥.\n\n"
                     f"Token Timeout: {get_exp_time(VERIFY_EXPIRE)}\n\n"
-                    "What is the token?\n\n"
-                    "This is an ads token. Complete 1 ad to use the bot for 24 hours.</strong>"
+                    "U Want Direct Video 📥 No Link ?\n\n"
+                    "⚪Than msg here To Buyb:- @Membership_buy_Adult_bot</strong>"
                 )
                 await client.send_photo(
                     chat_id=message.chat.id,
@@ -286,7 +286,10 @@ async def not_joined(client: Client, message: Message):
         ],[
             InlineKeyboardButton(
                 "Join Channel",
-                url = f"https://t.me/+cw0DyuLqmdk1NTE1")
+                url = f"https://t.me/+IK-TVp4mc8w3MTM1"),
+            InlineKeyboardButton(
+                "Start Bot",
+                url = f"https://t.me/Membership_buy_Adult_bot")
     ]]
     try:
         buttons.append(
