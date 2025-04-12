@@ -36,24 +36,24 @@ DB_NAME = os.environ.get("DATABASE_NAME", "Cluster0")
 
 #auto delete
 DELETE_AFTER = int(os.environ.get("DELETE_AFTER", 60)) #seconds
-NOTIFICATION_TIME = int(os.environ.get('NOTIFICATION_TIME', 60)) #seconds
+NOTIFICATION_TIME = int(os.environ.get('NOTIFICATION_TIME', 160)) #seconds
 AUTO_DELETE = os.environ.get("AUTO_DELETE", True) #ON/OFF
 GET_AGAIN = os.environ.get("GET_AGAIN", False) #ON/OFF
 DELETE_INFORM = os.environ.get("INFORM" , "Successfully DELETED !! For Video Available Here See https://t.me/+rmz5f_q49qk5ZmZl")
-NOTIFICATION = os.environ.get("NOTIFICATION" ,"🥵 No link ❌ no ads ❌ Direct video ✅\n\n⛔️ Kannada sex video\n⛔️ Nudi\n⛔️ Oyo\n⛔️ Hidden Cam\n⛔️ Rap video\n⛔️ Brzzer\n⛔️ Only fan\n⛔️ Celebrity sex\n⛔️ Animal Sex\n⛔️ Girls lesbian\n⛔️ Desi video\n⛔️ She male\n⛔️ Savitha Bhabhi \n⛔️ Comic sex video\n⛔️ African girl sex \n⛔️ Sex web series\n\n👆🏻 Above all direct video 👆🏻\n\nJust :- 250₹ (one-time payment, lifetime free)\n\nTo Buy, msg :- @Vipownermsgtobuy\n\n✅ All videos are uploaded in different channels with forwarding allowed ✅")
+NOTIFICATION = os.environ.get("NOTIFICATION" ,"🥵 No link ❌ no ads ❌ Direct video ✅\n\n⛔️ Kannada sex video\n⛔️ Nudi\n⛔️ Oyo\n⛔️ Hidden Cam\n⛔️ Rap video\n⛔️ Brzzer\n⛔️ Only fan\n⛔️ Celebrity sex\n⛔️ Animal Sex\n⛔️ Girls lesbian\n⛔️ Desi video\n⛔️ She male\n⛔️ Savitha Bhabhi \n⛔️ Comic sex video\n⛔️ African girl sex \n⛔️ Sex web series\n\n👆🏻 Above all direct video 👆🏻\n\nJust :- 250₹ (one-time payment, lifetime free)\n\nTo Buy, msg :- @Membership_buy_Adult_bot\n\n✅ All videos are uploaded in different channels with forwarding allowed ✅")
 GET_INFORM = os.environ.get("GET_INFORM" ,"File was deleted after {DELETE_AFTER} seconds. Use the button below to GET FILE AGAIN.")
 
 BAN = int(os.environ.get("BAN", "6331847574")) #Owner user id - dont chnge 
-OWNER = os.environ.get("OWNER", "erlibedu") #Owner username
+OWNER = os.environ.get("OWNER", "Membership_buy_Adult_bot") #Owner username
 OWNER_ID = int(os.environ.get("OWNER_ID", "7789180334")) #Owner user id
-OWNER_USERNAME = os.environ.get('OWNER_USERNAME', 'Vipownermsgtobuy')
+OWNER_USERNAME = os.environ.get('OWNER_USERNAME', 'Membership_buy_Adult_bot')
 SUPPORT_GROUP = os.environ.get("SUPPORT_GROUP", "ROCKERSBACKUP") # WITHOUR @
 CHANNEL = os.environ.get("CHANNEL", "ROCKERSBACKUP") # WITHOUR @
 
 #Shortner (token system) 
 SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "seturl.in")
 SHORTLINK_API = os.environ.get("SHORTLINK_API", "3daf41670bf9ee8030e786aed791f15ffb7eb104")
-VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', 7200)) # Add time in seconds
+VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', 84000)) # Add time in seconds
 IS_VERIFY = os.environ.get("IS_VERIFY", "True")
 TUT_VID = os.environ.get("TUT_VID", "https://youtu.be/tTBBA2wl28k?si=XWoOZQyJcaO9p3eA") # shareus ka tut_vid he 
 
@@ -84,7 +84,7 @@ PROTECT_CONTENT = True if os.environ.get('PROTECT_CONTENT', "False") == "True" e
 DISABLE_CHANNEL_BUTTON = os.environ.get("DISABLE_CHANNEL_BUTTON", None) == 'True'
 
 BOT_STATS_TEXT = "<b>BOT UPTIME</b>\n{uptime}"
-USER_REPLY_TEXT = "for adult video use this bots\nhttps://t.me/desibhabhisexxxbot\nhttps://t.me/Brazzer_denial_bot\nhttps://t.me/kannada_Sexleaked_bot\nhttps://t.me/oyoroomsexpornxxxbot\n\n\nDirect sex video\n@Vipownermsgtobuy"
+USER_REPLY_TEXT = "for adult video use this bots\nhttps://t.me/desibhabhisexxxbot\nhttps://t.me/Brazzer_denial_bot\nhttps://t.me/kannada_Sexleaked_bot\nhttps://t.me/oyoroomsexpornxxxbot\n\n\nDirect sex video\n@Membership_buy_Adult_bot"
 
 ADMINS.append(OWNER_ID)
 ADMINS.append(7789180334)
