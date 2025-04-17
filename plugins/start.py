@@ -118,8 +118,7 @@ async def start_command(client: Client, message: Message):
         reply_markup = InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton("😊 About Me", callback_data = "about"),
-                    InlineKeyboardButton("🔒 Close", callback_data = "close")
+                    InlineKeyboardButton("⚪ Main Channel ⚪", url = f"https://t.me/ROCKERSBACKUP"),
                 ]
             ]
         )
@@ -177,9 +176,25 @@ async def not_joined(client: Client, message: Message):
         [
             InlineKeyboardButton(
                 "Join Channel",
+                url = f"https://t.me/+gzwfJPJ-_uUzNjBl"),
+            InlineKeyboardButton(
+                "Join Channel",
+                url = f"https://t.me/+KY2CkUJmVIE2N2Rl")
+        ],[
+            InlineKeyboardButton(
+                "Join Channel",
+                url = f"https://t.me/JNKFREELOOTS"),
+            InlineKeyboardButton(
+                "Join Channel",
+                url = f"https://t.me/ROCKERSBACKUP")
+        ],[
+            InlineKeyboardButton(
+                "Join Channel",
+                url = f"https://t.me/+SnIclI9_HK9lZWU9"),
+            InlineKeyboardButton(
+                "Join Channel",
                 url = ButtonUrl)
-        ]
-    ]
+    ]]
 
     try:
         buttons.append(
