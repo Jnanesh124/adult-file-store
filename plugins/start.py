@@ -176,7 +176,7 @@ async def not_joined(client: Client, message: Message):
         [
             InlineKeyboardButton(
                 "Join Channel",
-                url = f"https://t.me/+JL-Z9gmRBxY3ZDI9"),
+                url = f"https://t.me/JNKFREELOOTS"),
             InlineKeyboardButton(
                 "Join Channel",
                 url = f"https://t.me/+KY2CkUJmVIE2N2Rl")
@@ -186,7 +186,7 @@ async def not_joined(client: Client, message: Message):
                 url = f"https://t.me/JNKFREELOOTS"),
             InlineKeyboardButton(
                 "Join Channel",
-                url = f"https://t.me/ROCKERSBACKUP")
+                url = f"https://t.me/+KY2CkUJmVIE2N2Rl")
         ],[
             InlineKeyboardButton(
                 "Join Channel",
